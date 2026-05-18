@@ -2,16 +2,17 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies and run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm run dev
+```
+
+On Windows PowerShell, if `pnpm` is blocked by the execution policy, use:
+
+```bash
+pnpm.cmd run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
