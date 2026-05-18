@@ -27,6 +27,17 @@ Ese archivo monta:
 - `MobileAppChrome`, que contiene el header movil, el drawer movil y la barra inferior movil.
 - `children`, que representa la ruta actual.
 
+Tambien declara el viewport de la aplicacion:
+
+```tsx
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+```
+
+Esto es importante para moviles porque le dice al navegador que use el ancho real del dispositivo. Asi Tailwind puede aplicar correctamente breakpoints como `sm`, `md`, `lg`, `xl` y `2xl`.
+
 Tambien define clases importantes en el `body`:
 
 ```tsx
@@ -365,9 +376,20 @@ Este proyecto usa Next.js App Router. La estructura HTML global se define en `ap
 
 ### Meta viewport
 
-No se encontro una configuracion manual de `viewport` en el proyecto.
+El proyecto ahora tiene una configuracion manual y explicita de `viewport` en:
 
-En Next.js App Router, Next suele generar el viewport por defecto para que el layout sea responsive. Si en el futuro se necesita personalizarlo, normalmente se haria exportando `viewport` desde `app/layout.tsx` o desde archivos compatibles con App Router.
+- `app/layout.tsx`
+
+La configuracion es:
+
+```tsx
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+```
+
+Esto evita depender solo del valor por defecto de Next.js y deja claro que la app debe renderizarse usando el ancho del dispositivo. En celulares, esto ayuda a que las clases responsive de Tailwind se comporten como se espera.
 
 ### Tailwind config
 
@@ -404,6 +426,30 @@ El responsive no se define con media queries manuales en este archivo. Depende d
 No se encontraron archivos `.env*` en el proyecto.
 
 La version movil no depende de variables de entorno.
+
+### Configuracion de Next para red local y produccion
+
+Archivo:
+
+- `next.config.ts`
+
+Actualmente no hay una IP fija en `allowedDevOrigins`.
+
+Antes el proyecto tenia una configuracion parecida a:
+
+```ts
+allowedDevOrigins: ["192.168.18.9"]
+```
+
+Eso podia causar problemas al copiar el repositorio en otra PC, porque la nueva maquina normalmente tiene otra IP local. Al quitar esa configuracion fija, el proyecto queda menos amarrado a una computadora especifica.
+
+La version movil no debe activarse por IP ni por nombre de dispositivo. Debe activarse por el ancho del viewport usando Tailwind. Por eso, para desarrollo en otra PC o para produccion, lo importante es:
+
+- Que el servidor Next este accesible desde la red o dominio correspondiente.
+- Que el navegador movil reciba el viewport correcto.
+- Que las clases responsive sigan usando `md:hidden`, `hidden md:block`, `hidden md:grid`, etc.
+
+Si desde un celular no carga en otra PC, normalmente el problema no esta en la UI movil, sino en acceso de red: IP incorrecta, firewall, puerto cerrado, celular y PC en redes distintas o servidor levantado solo para `localhost`.
 
 ## Como leer el responsive de este proyecto
 
