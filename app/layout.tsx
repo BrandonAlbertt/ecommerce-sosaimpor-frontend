@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { MobileAppChrome } from "@/components/layout/mobile/MobileAppChrome";
 import { MobileFilterProvider } from "@/components/layout/mobile/MobileFilterContext";
 import { Providers } from "./providers";
@@ -7,6 +7,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "SOSA IMPORT | Repuestos usados importados",
   description: "Tienda frontend de autopartes usadas importadas.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
