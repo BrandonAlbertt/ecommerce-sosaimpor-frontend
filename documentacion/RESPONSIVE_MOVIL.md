@@ -433,15 +433,30 @@ Archivo:
 
 - `next.config.ts`
 
-Actualmente no hay una IP fija en `allowedDevOrigins`.
+Actualmente no hay una IP fija unica en `allowedDevOrigins`. En su lugar, el proyecto permite rangos comunes de red local para desarrollo:
 
-Antes el proyecto tenia una configuracion parecida a:
+```ts
+const localNetworkDevOrigins = [
+  "192.168.*.*",
+  "10.*.*.*",
+  "172.*.*.*",
+];
+
+const nextConfig: NextConfig = {
+  allowedDevOrigins: localNetworkDevOrigins,
+  // ...
+};
+```
+
+Esto es necesario en Next.js 16 porque el servidor de desarrollo bloquea por seguridad algunos recursos internos de `/_next` cuando vienen desde otro origen. Si se abre la app desde un celular usando la IP de la PC, el HTML y el CSS pueden verse, pero si los scripts de Next quedan bloqueados, React no hidrata la pagina y los botones con `onClick` no responden.
+
+Antes el proyecto tenia una configuracion amarrada a una sola maquina:
 
 ```ts
 allowedDevOrigins: ["192.168.18.9"]
 ```
 
-Eso podia causar problemas al copiar el repositorio en otra PC, porque la nueva maquina normalmente tiene otra IP local. Al quitar esa configuracion fija, el proyecto queda menos amarrado a una computadora especifica.
+Eso podia causar problemas al copiar el repositorio en otra PC, porque la nueva maquina normalmente tiene otra IP local. Con rangos como `192.168.*.*`, `10.*.*.*` y `172.*.*.*`, el desarrollo desde celulares en redes privadas queda cubierto sin editar el proyecto cada vez.
 
 La version movil no debe activarse por IP ni por nombre de dispositivo. Debe activarse por el ancho del viewport usando Tailwind. Por eso, para desarrollo en otra PC o para produccion, lo importante es:
 

@@ -38,7 +38,7 @@ export function MobileFilterDrawer({ open, onClose }: MobileFilterDrawerProps) {
             <X size={18} suppressHydrationWarning />
           </button>
         </div>
-        <ProductFilters variant="mobile" />
+        <ProductFilters />
       </aside>
     </div>
   );

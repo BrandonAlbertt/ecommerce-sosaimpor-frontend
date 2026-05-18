@@ -82,7 +82,7 @@ export function ProductsPageContent() {
             {/* Accion movil: abre el mismo filtro de escritorio en un drawer compacto. */}
             <div className="md:hidden">
               <button
-                className="flex h-12 w-full max-w-full items-center justify-center gap-2 rounded-2xl border border-zinc-200 bg-white text-sm font-black text-zinc-900 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+                className="relative z-[20] flex h-12 w-full max-w-full touch-manipulation items-center justify-center gap-2 rounded-2xl border border-zinc-200 bg-white text-sm font-black text-zinc-900 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
                 onClick={openFilters}
                 type="button"
               >

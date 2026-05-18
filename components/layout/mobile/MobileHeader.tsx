@@ -3,25 +3,23 @@
 import Link from "next/link";
 import { Menu, Moon, Search, ShoppingCart, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useSyncExternalStore } from "react";
 
 import { Input } from "@/components/ui/Input";
+import { useMobileFilter } from "./MobileFilterContext";
 
-type MobileHeaderProps = {
-  onOpenFilters: () => void;
-};
-
-export function MobileHeader({ onOpenFilters }: MobileHeaderProps) {
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
+export function MobileHeader() {
   const { resolvedTheme, setTheme } = useTheme();
+  const { openFilters } = useMobileFilter();
   const isDark = resolvedTheme === "dark";
 
   const iconButtonClass =
-    "flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-800 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100";
+    "relative z-[70] flex h-10 w-10 touch-manipulation items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-800 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100";
+  const nextTheme = isDark ? "light" : "dark";
+
+  function handleThemeToggle() {
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    setTheme(nextTheme);
+  }
 
   return (
     // Seccion movil: header compacto con marca, filtros, tema, carrito y busqueda.
@@ -41,7 +39,7 @@ export function MobileHeader({ onOpenFilters }: MobileHeaderProps) {
           <button
             aria-label="Abrir categorias y filtros"
             className={iconButtonClass}
-            onClick={onOpenFilters}
+            onClick={openFilters}
             type="button"
           >
             <Menu size={19} suppressHydrationWarning />
@@ -49,14 +47,10 @@ export function MobileHeader({ onOpenFilters }: MobileHeaderProps) {
           <button
             aria-label="Cambiar tema"
             className={iconButtonClass}
-            disabled={!mounted}
-            onClick={() => setTheme(isDark ? "light" : "dark")}
+            onClick={handleThemeToggle}
             type="button"
           >
-            {/* Seccion movil: icono estable durante SSR para evitar errores de hidratacion. */}
-            {!mounted ? (
-              <Sun size={18} suppressHydrationWarning />
-            ) : isDark ? (
+            {isDark ? (
               <Sun size={18} suppressHydrationWarning />
             ) : (
               <Moon size={18} suppressHydrationWarning />
