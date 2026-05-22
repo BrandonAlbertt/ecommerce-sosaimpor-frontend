@@ -1,5 +1,5 @@
-import { ProductsPageContent } from "./ProductsPageContent";
+import { ProductPageContainer } from "@/components/compartidos/productos/ProductPageContainer";
 
-export default function ProductsPage() {
-  return <ProductsPageContent />;
+export default function ProductosPage() {
+  return <ProductPageContainer />;
 }

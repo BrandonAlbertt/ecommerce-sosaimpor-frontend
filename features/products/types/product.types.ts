@@ -21,6 +21,11 @@ export type Product = {
   condition: ProductCondition;
 };
 
+export type CategoryItem = {
+  name: string;
+  color: string;
+};
+
 // Valores que entiende el backend para filtrar disponibilidad.
 export type ProductAvailabilityFilter = "disponible" | "proximamente";
 

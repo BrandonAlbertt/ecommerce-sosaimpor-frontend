@@ -1,5 +1,5 @@
-import { ProductsPageContent } from "./productos/ProductsPageContent";
+import { ProductPageContainer } from "@/components/compartidos/productos/ProductPageContainer";
 
 export default function Home() {
-  return <ProductsPageContent />;
+  return <ProductPageContainer />;
 }

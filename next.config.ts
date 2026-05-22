@@ -8,6 +8,14 @@ const localNetworkDevOrigins = [
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: localNetworkDevOrigins,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+  },
   turbopack: {
     root: __dirname,
   },
