@@ -1,161 +1,199 @@
-# Guia de la barra de busqueda de productos
+# Guia simple: barra de busqueda de productos
 
-Esta guia explica la barra de busqueda actual del frontend: que componente la muestra, que hook consulta la API, como aparecen sugerencias mientras se escribe y como se abre el detalle al hacer clic.
+## Idea general
 
-## Flujo rapido
+En esta app, la busqueda de productos se crea una sola vez en `ProductPageContainer` y se comparte con el header de escritorio y el header movil.
 
-```txt
-Home
--> ProductPageContainer
-   -> useProductSearch()
-      -> useProducts()
-         -> productsApi.ts
-            -> GET /api/productos?search=texto&page=1&limit=4
-   -> ProductSearch
-      -> sugerencias
-         -> clic en producto
-            -> /productos/[slug]
-               -> ProductDetailContainer
+```mermaid
+flowchart TD
+  A[app/page.tsx<br/>ruta /] --> B[ProductPageContainer]
+  B --> C[useProductSearch]
+  C --> D[useProducts<br/>sugerencias]
+  C --> E[useProducts<br/>resultados enviados]
+  D --> F[productsApi.ts]
+  E --> F
+  F --> G[axiosClient.ts]
+  G --> H[GET /api/productos]
+
+  B --> I[DesktopHeader]
+  B --> J[MobileAppChrome]
+  I --> K[ProductSearch<br/>desktop]
+  J --> L[MobileHeader]
+  L --> M[ProductSearch<br/>mobile]
 ```
 
-## Archivos que participan
+## Que hace cada parte
 
-| Archivo | Funcion |
-| --- | --- |
-| `app/page.tsx` | Carga el Home con `ProductPageContainer`. |
-| `components/compartidos/productos/ProductPageContainer.tsx` | Crea la logica de busqueda con `useProductSearch`. |
-| `features/products/hooks/useProductSearch.ts` | Guarda el texto escrito y arma el modelo de la barra. |
-| `features/products/hooks/useProducts.ts` | Consulta productos y devuelve `products`, `pagination`, `isLoading` y `error`. |
-| `features/products/api/productsApi.ts` | Consulta `GET /api/productos` con el query `search`. |
-| `components/compartidos/layout/ProductSearch.tsx` | Dibuja input, boton y lista de sugerencias. |
-| `components/escritorio/layout/DesktopHeader.tsx` | Muestra `ProductSearch` en escritorio por prop. |
-| `components/movil/layout/MobileAppChrome.tsx` | Monta header, filtros y barra inferior movil de la pagina. |
-| `components/movil/layout/MobileHeader.tsx` | Muestra `ProductSearch` en movil por prop. |
-| `app/productos/[slug]/page.tsx` | Ruta del detalle cuando se hace clic en una sugerencia. |
+### `app/page.tsx`
 
-## Como funciona al escribir
+Es la pagina principal `/`.
 
-`ProductPageContainer` llama:
+Solo renderiza:
 
-```tsx
-const { productSearch, results, submittedSearch } = useProductSearch();
+- `ProductPageContainer`
+
+### `ProductPageContainer`
+
+Es el componente que arma la pantalla principal.
+
+Hace esto:
+
+- llama a `useProductSearch`;
+- recibe `productSearch`, `results` y `submittedSearch`;
+- pasa `productSearch` a `DesktopHeader`;
+- pasa `productSearch` a `MobileAppChrome`;
+- por ahora registra en consola los resultados enviados.
+
+### `useProductSearch`
+
+Guarda el estado principal de la barra.
+
+Maneja dos textos:
+
+- `searchValue`: texto que el usuario esta escribiendo;
+- `submittedSearch`: texto enviado con `Buscar` o `Mostrar mas coincidencias`.
+
+Tambien arma el modelo que consume `ProductSearch`.
+
+### `useProducts`
+
+Consulta la API de productos.
+
+Se usa dos veces:
+
+- para sugerencias con `limit: 4`;
+- para resultados enviados con `limit: 12`.
+
+### `ProductSearch`
+
+Es el componente visual de la barra.
+
+Muestra:
+
+- input controlado;
+- boton buscar;
+- estado de carga;
+- error;
+- mensaje sin resultados;
+- sugerencias;
+- boton `Mostrar mas coincidencias`.
+
+## Flujo al escribir
+
+Cuando el usuario escribe, el input cambia `searchValue`. Ese texto limpio se usa para pedir sugerencias.
+
+```mermaid
+sequenceDiagram
+  participant User as Usuario
+  participant UI as ProductSearch
+  participant Hook as useProductSearch
+  participant Products as useProducts
+  participant Api as productsApi.ts
+  participant Backend as API Backend
+
+  User->>UI: Escribe texto
+  UI->>Hook: onValueChange(value)
+  Hook->>Hook: Actualiza searchValue
+  Hook->>Products: search limpio + page 1 + limit 4
+  Products->>Api: getProductsByQueryString
+  Api->>Backend: GET /api/productos?search=texto&page=1&limit=4
+  Backend-->>Api: Productos encontrados
+  Api-->>Products: JSON tipado
+  Products-->>Hook: products, pagination, loading, error
+  Hook-->>UI: suggestions en productSearch
+  UI-->>User: Lista desplegable
 ```
 
-`useProductSearch` guarda dos textos:
+## Flujo al hacer clic
 
-| Variable | Uso |
-| --- | --- |
-| `searchValue` | Texto que el usuario esta escribiendo ahora. |
-| `submittedSearch` | Texto enviado con el boton `Buscar` o `Mostrar mas coincidencias`. |
+Cada sugerencia abre el detalle del producto usando su `slug`.
 
-Cada vez que cambia `searchValue`, el hook llama `useProducts` para sugerencias:
-
-```tsx
-useProducts(
-  { search: cleanSearch, page: 1, limit: 4 },
-  { enabled: cleanSearch.length > 0 },
-);
+```mermaid
+flowchart LR
+  A[Usuario hace clic<br/>en sugerencia] --> B[Link de Next.js]
+  B --> C["/productos/[slug]"]
+  C --> D[ProductDetailContainer]
 ```
 
-Por eso la barra busca **desde la primera letra no vacia**. Si el usuario escribe rapido, `useProducts` cancela la peticion anterior con `AbortController` y conserva la consulta nueva.
+## Modo movil y escritorio
 
-## Que muestra `ProductSearch`
+La logica vive en un solo lugar, pero la UI aparece en dos headers.
 
-`ProductSearch` recibe un `model` y usa sus datos para pintar:
-
-- el texto del input;
-- estado `Buscando coincidencias...`;
-- error de API;
-- mensaje cuando no hay productos;
-- hasta 4 sugerencias;
-- boton `Mostrar mas coincidencias` cuando hay mas resultados.
-
-Cada sugerencia usa un `Link`:
-
-```tsx
-href={`/productos/${product.slug}`}
+```mermaid
+flowchart TD
+  A[ProductPageContainer] --> B[productSearch]
+  B --> C[DesktopHeader]
+  B --> D[MobileAppChrome]
+  C --> E[ProductSearch desktop]
+  D --> F[MobileHeader]
+  F --> G[ProductSearch mobile]
 ```
 
-Al hacer clic, Next.js abre la pagina de detalle:
+En escritorio:
 
-```txt
-/productos/slug-del-producto
+- `DesktopHeader` recibe `productSearch`;
+- renderiza `ProductSearch` con variante por defecto.
+
+En movil:
+
+- `MobileAppChrome` recibe `productSearch`;
+- lo pasa a `MobileHeader`;
+- `MobileHeader` renderiza `ProductSearch` con `variant="mobile"`.
+
+## Sugerencias y busqueda enviada
+
+Hay dos consultas separadas para no mezclar el desplegable con la busqueda final.
+
+```mermaid
+flowchart TD
+  A[useProductSearch] --> B[searchValue]
+  A --> C[submittedSearch]
+
+  B --> D{Tiene texto?}
+  D -- si --> E[useProducts<br/>limit 4]
+  E --> F[Sugerencias del desplegable]
+
+  C --> G{Fue enviado?}
+  G -- si --> H[useProducts<br/>limit 12]
+  H --> I[Resultados listos para grilla]
 ```
 
-## Datos y funciones del modelo
+## Rutas de API
 
-Tipo usado por la barra:
+La barra usa la misma ruta publica de productos. Lo que cambia son los query params.
 
-```ts
-ProductSearchModel
+```mermaid
+flowchart LR
+  A[ProductSearch] --> B[useProductSearch]
+  B --> C[useProducts]
+  C --> D[productsApi.ts]
+  D --> E["/api/productos?search=texto&page=1&limit=4"]
+  D --> F["/api/productos?search=texto&page=1&limit=12"]
 ```
 
-| Campo | Tipo resumido | Para que sirve |
-| --- | --- | --- |
-| `value` | `string` | Valor actual del input. |
-| `suggestions` | `ProductApiItem[]` | Productos sugeridos desde la API. |
-| `suggestionsPagination` | paginacion o `null` | Indica total y si hay mas pagina. |
-| `isLoading` | `boolean` | Indica que las sugerencias estan cargando. |
-| `error` | `string` o `null` | Mensaje si la consulta falla. |
-| `onValueChange(value)` | funcion | Actualiza `searchValue` al escribir. |
-| `onSubmit()` | funcion | Guarda el texto como busqueda enviada. |
-| `onShowMore()` | funcion | Usa el mismo envio que el boton Buscar. |
+Ejemplos:
 
-Props de `ProductSearch`:
+- sugerencias: `GET /api/productos?search=faro&page=1&limit=4`;
+- busqueda enviada: `GET /api/productos?search=faro&page=1&limit=12`;
+- detalle: `/productos/slug-del-producto`.
 
-| Prop | Uso |
-| --- | --- |
-| `model` | Datos y acciones de busqueda. |
-| `variant` | `"desktop"` por defecto o `"mobile"` para cambiar tamano y textos. |
+## Estado actual
 
-## Escritorio y movil
+Ahora mismo:
 
-En escritorio el modelo viaja por props:
+- las sugerencias al escribir si usan datos de la API;
+- el clic en una sugerencia si abre el detalle por `slug`;
+- el boton `Buscar` si consulta resultados con `limit: 12`;
+- la grilla visible todavia usa `catalogProducts`.
 
-```txt
-ProductPageContainer
--> DesktopHeader productSearch={productSearch}
--> ProductSearch model={productSearch}
-```
+Para que la grilla muestre la busqueda enviada, hay que conectar `results.products` con `ProductGrid`.
 
-En movil tambien viaja por props:
+## Resumen corto
 
-```txt
-ProductPageContainer
--> MobileAppChrome productSearch={productSearch}
--> MobileHeader productSearch={productSearch}
--> ProductSearch model={productSearch} variant="mobile"
-```
-
-Asi la misma pagina crea la logica una vez y la entrega directo a sus dos headers.
-
-## Boton Buscar y estado actual
-
-El boton `Buscar` y `Mostrar mas coincidencias` guardan el texto en `submittedSearch`. Ese texto dispara otra consulta:
-
-```tsx
-useProducts(
-  { search: submittedSearch, page: 1, limit: 12 },
-  { enabled: submittedSearch.length > 0 },
-);
-```
-
-Hoy `ProductPageContainer` recibe esos `results` y los registra en consola cuando llegan. La grilla visible todavia usa:
-
-```tsx
-<ProductGrid products={catalogProducts} />
-```
-
-Por eso actualmente:
-
-- sugerencias al escribir: si funcionan con datos de API;
-- clic en sugerencia: si redirige al detalle por `slug`;
-- boton Buscar: si consulta resultados, pero aun no reemplaza la grilla visible.
-
-## Regla para seguir programando
-
-Si quieres cambiar como se consulta la API, revisa `useProductSearch` y `useProducts`.
-
-Si quieres cambiar la UI del input o las sugerencias, revisa `ProductSearch`.
-
-Si quieres mostrar los resultados enviados en la grilla, conecta `results.products` con la grilla que hoy recibe `catalogProducts`.
+- `ProductPageContainer` = crea la logica de busqueda.
+- `useProductSearch` = guarda texto, sugerencias y resultados enviados.
+- `useProducts` = consulta la API.
+- `ProductSearch` = dibuja input y sugerencias.
+- `DesktopHeader` = barra en escritorio.
+- `MobileHeader` = barra en movil.
+- `productsApi.ts` = arma `/api/productos?search=...`.

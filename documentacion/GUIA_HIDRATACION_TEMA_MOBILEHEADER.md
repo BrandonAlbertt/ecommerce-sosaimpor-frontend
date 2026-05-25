@@ -1,67 +1,114 @@
-# Guia visual: hidratacion del tema en MobileHeader
+# Guia simple: hidratacion del tema en `MobileHeader`
 
-Esta guia resume como interactuan `MobileHeader` y `ThemeProvider`, y cual es el patron usado para evitar errores de hidratacion cuando el tema se resuelve en el navegador.
+## Idea general
 
-## Componentes involucrados
+En esta app, el tema claro/oscuro lo controla `next-themes` desde `ThemeProvider`.
+
+El detalle importante es este:
+
+- el servidor renderiza antes de saber el tema real del navegador;
+- el navegador hidrata despues;
+- por eso `MobileHeader` no debe usar `resolvedTheme` para cambiar su HTML hasta que el componente ya este montado.
 
 ```mermaid
 flowchart TD
-  Layout["app/layout.tsx<br/>RootLayout"]
-  Providers["app/providers.tsx<br/>Providers"]
-  ThemeProvider["providers/ThemeProvider.tsx<br/>NextThemeProvider"]
-  MobileFilterProvider["MobileFilterProvider"]
-  Page["Paginas y componentes"]
-  MobileHeader["components/movil/layout/MobileHeader.tsx"]
-  UseTheme["useTheme()<br/>resolvedTheme + setTheme"]
-  Html["html.dark<br/>clase aplicada por next-themes"]
-  Tailwind["Tailwind dark:*<br/>estilos oscuros"]
+  A[app/layout.tsx] --> B[app/providers.tsx]
+  B --> C[ThemeProvider]
+  C --> D[NextThemeProvider<br/>next-themes]
+  D --> E[Clase dark en html]
+  E --> F[Tailwind dark:*]
 
-  Layout --> Providers
-  Providers --> ThemeProvider
-  ThemeProvider --> MobileFilterProvider
-  MobileFilterProvider --> Page
-  Page --> MobileHeader
-  ThemeProvider --> UseTheme
-  MobileHeader --> UseTheme
-  UseTheme --> Html
-  Html --> Tailwind
+  A --> G{children}
+  G --> H[ProductPageContainer]
+  H --> I[MobileAppChrome]
+  I --> J[MobileHeader]
+  J --> K[useTheme]
+  K --> D
 ```
 
-## Flujo de render
+## Que hace cada parte
 
-El servidor no conoce el tema guardado en el navegador. Por eso el primer render debe ser estable y no depender de `resolvedTheme`.
+### `app/layout.tsx`
+
+Es el marco global de toda la app.
+
+Hace esto:
+
+- renderiza `<html lang="es">`;
+- usa `suppressHydrationWarning`;
+- aplica estilos base al `body`;
+- monta `Providers`;
+- recibe `children`, que es la pagina activa.
+
+### `app/providers.tsx`
+
+Es el contenedor de providers globales.
+
+Ahora mismo monta:
+
+- `ThemeProvider`
+
+### `ThemeProvider`
+
+Vive en `providers/ThemeProvider.tsx`.
+
+Configura `next-themes` asi:
+
+- `attribute="class"`: el tema se aplica con una clase;
+- `defaultTheme="light"`: el primer tema esperado es claro;
+- `enableSystem={false}`: no usa automaticamente el tema del sistema;
+- `disableTransitionOnChange`: evita transiciones raras al cambiar tema.
+
+### `MobileHeader`
+
+Vive en `components/movil/layout/MobileHeader.tsx`.
+
+Hace esto:
+
+- lee `resolvedTheme` y `setTheme` con `useTheme`;
+- calcula `mounted` con `useSyncExternalStore`;
+- solo decide entre icono `Sun` y `Moon` cuando `mounted` es `true`;
+- deshabilita el boton de tema mientras `mounted` es `false`.
+
+## Flujo de hidratacion
 
 ```mermaid
 sequenceDiagram
   participant SSR as Servidor
   participant Browser as Navegador
   participant Header as MobileHeader
-  participant Themes as next-themes
+  participant Theme as next-themes
   participant Html as html
 
   SSR->>Header: Render inicial
-  Header-->>SSR: mounted = false, icono fallback
-  SSR-->>Browser: HTML inicial estable
+  Header-->>SSR: mounted=false, fallback estable
+  SSR-->>Browser: HTML inicial
 
-  Browser->>Header: Hidratacion React
+  Browser->>Header: React hidrata
   Header-->>Browser: Primer render cliente igual al servidor
-  Browser->>Header: useSyncExternalStore cambia mounted a true
-  Header->>Themes: Lee resolvedTheme
-  Themes->>Html: Aplica o quita clase dark
-  Header-->>Browser: Render dinamico con Sun/Moon y boton activo
+  Browser->>Header: mounted pasa a true
+  Header->>Theme: Lee resolvedTheme
+  Theme->>Html: Aplica o quita clase dark
+  Header-->>Browser: Muestra Sun o Moon y activa boton
 ```
 
 ## Patron anti-hidratacion
 
+El patron consiste en separar el primer render del estado dinamico del navegador.
+
 ```mermaid
-flowchart LR
-  A["Render inicial"] --> B{"mounted?"}
-  B -- "false" --> C["No leer tema para decidir UI<br/>Mostrar fallback estable<br/>Deshabilitar cambio de tema"]
-  B -- "true" --> D["Leer resolvedTheme<br/>Calcular isDark<br/>Permitir setTheme"]
-  D --> E["Actualizar clase dark en html"]
+flowchart TD
+  A[MobileHeader renderiza] --> B{mounted?}
+  B -- no --> C[Fallback fijo<br/>Sun visible<br/>boton disabled]
+  B -- si --> D[Leer resolvedTheme]
+  D --> E{Tema oscuro?}
+  E -- si --> F[Mostrar Sun<br/>siguiente tema: light]
+  E -- no --> G[Mostrar Moon<br/>siguiente tema: dark]
+  F --> H[setTheme al hacer click]
+  G --> H
 ```
 
-Codigo clave en `MobileHeader`:
+Codigo clave:
 
 ```tsx
 const mounted = useSyncExternalStore(
@@ -72,24 +119,69 @@ const mounted = useSyncExternalStore(
 
 const { resolvedTheme, setTheme } = useTheme();
 const isDark = mounted && resolvedTheme === "dark";
+const nextTheme = isDark ? "light" : "dark";
 
 function handleThemeToggle() {
   if (!mounted) {
     return;
   }
 
-  setTheme(isDark ? "light" : "dark");
+  setTheme(nextTheme);
 }
 ```
 
-## Reglas para nuevos componentes de tema
+## Escritorio y movil
 
-- No uses `resolvedTheme`, `theme`, `localStorage` o `matchMedia` para decidir el HTML del primer render.
-- Usa un estado de montaje estable antes de mostrar UI dependiente del tema.
-- Mientras `mounted` sea `false`, renderiza un fallback fijo.
-- Ejecuta `setTheme` solo despues de que `mounted` sea `true`.
-- Mantener `suppressHydrationWarning` en `<html>` ayuda porque `next-themes` puede cambiar la clase `dark` durante la hidratacion.
+El mismo patron tambien se usa en el toggle de escritorio.
 
-## Resumen
+```mermaid
+flowchart LR
+  A[ThemeProvider] --> B[useTheme]
+  B --> C[ThemeToggle<br/>escritorio]
+  B --> D[MobileHeader<br/>movil]
+  C --> E[Esperar mounted]
+  D --> F[Esperar mounted]
+```
 
-`ThemeProvider` controla la clase `dark` en `<html>`. `MobileHeader` consume `useTheme()`, pero solo aplica logica dinamica cuando el componente ya esta montado en cliente. Ese retraso intencional evita que el HTML generado por el servidor sea distinto al primer render del navegador.
+En escritorio:
+
+- `ThemeToggle` devuelve un boton deshabilitado si no esta montado;
+- despues del montaje muestra `Sun` o `Moon`.
+
+En movil:
+
+- `MobileHeader` muestra un icono fijo mientras no esta montado;
+- deshabilita el cambio de tema hasta que `mounted` sea `true`.
+
+## Por que evita el error
+
+React compara el HTML del servidor con el primer render del navegador.
+
+Si el servidor pinta una cosa y el cliente pinta otra inmediatamente, aparece un error de hidratacion.
+
+```mermaid
+flowchart TD
+  A[Servidor no conoce tema real] --> B[Render fijo]
+  B --> C[Cliente hidrata con el mismo render fijo]
+  C --> D[Hidratacion OK]
+  D --> E[Despues del montaje se lee resolvedTheme]
+  E --> F[UI dinamica segura]
+```
+
+## Regla para seguir programando
+
+Si un componente usa `useTheme`, `localStorage`, `matchMedia` o datos que solo existen en navegador:
+
+- no cambies el HTML inicial con esos datos;
+- usa un fallback fijo mientras no este montado;
+- ejecuta acciones dinamicas solo despues de `mounted`;
+- manten `suppressHydrationWarning` en `<html>` cuando `next-themes` modifica la clase `dark`.
+
+## Resumen corto
+
+- `ThemeProvider` = conecta `next-themes`.
+- `next-themes` = agrega o quita `dark` en `<html>`.
+- `MobileHeader` = consume `useTheme`.
+- `mounted` = barrera antes de usar estado del navegador.
+- fallback fijo = evita diferencia entre servidor y primer render cliente.
+- `setTheme` = solo se ejecuta despues del montaje.
