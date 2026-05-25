@@ -1,26 +1,42 @@
 "use client";
 
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
 import { Menu, Moon, Search, ShoppingCart, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { ProductSearch } from "@/components/compartidos/layout/ProductSearch";
+import type { ProductSearchModel } from "@/components/compartidos/layout/ProductSearch";
 import { Input } from "@/components/compartidos/ui/Input";
 import { useMobileFilter } from "./MobileFilterContext";
-import { useMobileHeaderSearch } from "./MobileHeaderSearchContext";
 
-export function MobileHeader() {
+type MobileHeaderProps = {
+  productSearch?: ProductSearchModel;
+};
+
+const subscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+export function MobileHeader({ productSearch }: MobileHeaderProps) {
+  const mounted = useSyncExternalStore(
+    subscribe,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
   const { resolvedTheme, setTheme } = useTheme();
   const { openFilters } = useMobileFilter();
-  const { productSearch } = useMobileHeaderSearch();
-  const isDark = resolvedTheme === "dark";
+  const isDark = mounted && resolvedTheme === "dark";
 
   const iconButtonClass =
     "relative z-[70] flex h-10 w-10 touch-manipulation items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-800 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100";
   const nextTheme = isDark ? "light" : "dark";
 
   function handleThemeToggle() {
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    if (!mounted) {
+      return;
+    }
+
     setTheme(nextTheme);
   }
 
@@ -50,13 +66,18 @@ export function MobileHeader() {
           <button
             aria-label="Cambiar tema"
             className={iconButtonClass}
+            disabled={!mounted}
             onClick={handleThemeToggle}
             type="button"
           >
-            {isDark ? (
-              <Sun size={18} suppressHydrationWarning />
+            {mounted ? (
+              isDark ? (
+                <Sun size={18} suppressHydrationWarning />
+              ) : (
+                <Moon size={18} suppressHydrationWarning />
+              )
             ) : (
-              <Moon size={18} suppressHydrationWarning />
+              <Sun size={18} suppressHydrationWarning />
             )}
           </button>
           <Link

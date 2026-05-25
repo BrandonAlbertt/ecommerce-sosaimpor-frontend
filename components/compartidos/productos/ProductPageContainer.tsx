@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { DesktopFooter } from "@/components/escritorio/layout/DesktopFooter";
 import { DesktopHeader } from "@/components/escritorio/layout/DesktopHeader";
 import { CartPreview } from "@/components/escritorio/productos/CartPreview";
-import { useMobileHeaderSearch } from "@/components/movil/layout/MobileHeaderSearchContext";
+import { MobileAppChrome } from "@/components/movil/layout/MobileAppChrome";
 import { useMobileFilter } from "@/components/movil/layout/MobileFilterContext";
 import { catalogCategories, catalogProducts } from "@/features/products/data/catalogData";
 import { useProductSearch } from "@/features/products/hooks/useProductSearch";
@@ -70,23 +70,8 @@ function BenefitsBar() {
 export function ProductPageContainer() {
   // LOGICA DE FILTROS MOVILES: ABRE EL PANEL DESDE LA CABECERA.
   const { openFilters } = useMobileFilter();
-  // LOGICA DE BUSQUEDA MOVIL: SINCRONIZA EL TEXTO ESCRITO CON LA CABECERA.
-  const { setProductSearch } = useMobileHeaderSearch();
   // LOGICA PRINCIPAL: OBTIENE EL ESTADO DE BUSQUEDA Y LOS RESULTADOS.
   const { productSearch, results, submittedSearch } = useProductSearch();
-
-  // SINCRONIZA EL TEXTO DE BUSQUEDA CON EL HEADER MOVIL.
-  useEffect(() => {
-    setProductSearch(productSearch);
-  }, [productSearch, setProductSearch]);
-
-  // LIMPIA LA BUSQUEDA MOVIL AL DESMONTAR EL COMPONENTE.
-  useEffect(
-    () => () => {
-      setProductSearch(null);
-    },
-    [setProductSearch],
-  );
 
   // LOGICA DE RESULTADOS: REGISTRA EL ESTADO FINAL DE LA BUSQUEDA CUANDO YA CARGO.
   useEffect(() => {
@@ -118,6 +103,8 @@ export function ProductPageContainer() {
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white transition-colors duration-300 dark:bg-zinc-950">
+      {/* CHROME MOVIL: RECIBE LA MISMA BUSQUEDA QUE EL HEADER DE ESCRITORIO. */}
+      <MobileAppChrome productSearch={productSearch} />
       {/* PARTE ESCRITORIO */}
       {/* HEADER PARA PANTALLAS MEDIANAS Y GRANDES. */}
       <DesktopHeader productSearch={productSearch} />

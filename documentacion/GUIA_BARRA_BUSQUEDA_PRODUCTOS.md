@@ -29,8 +29,8 @@ Home
 | `features/products/api/productsApi.ts` | Consulta `GET /api/productos` con el query `search`. |
 | `components/compartidos/layout/ProductSearch.tsx` | Dibuja input, boton y lista de sugerencias. |
 | `components/escritorio/layout/DesktopHeader.tsx` | Muestra `ProductSearch` en escritorio por prop. |
-| `components/movil/layout/MobileHeader.tsx` | Muestra `ProductSearch` en movil desde un contexto. |
-| `components/movil/layout/MobileHeaderSearchContext.tsx` | Lleva el modelo de busqueda desde la pagina hasta el header movil. |
+| `components/movil/layout/MobileAppChrome.tsx` | Monta header, filtros y barra inferior movil de la pagina. |
+| `components/movil/layout/MobileHeader.tsx` | Muestra `ProductSearch` en movil por prop. |
 | `app/productos/[slug]/page.tsx` | Ruta del detalle cuando se hace clic en una sugerencia. |
 
 ## Como funciona al escribir
@@ -118,15 +118,16 @@ ProductPageContainer
 -> ProductSearch model={productSearch}
 ```
 
-En movil el header vive en `app/layout.tsx`, fuera de la pagina. Por eso el modelo viaja por contexto:
+En movil tambien viaja por props:
 
 ```txt
 ProductPageContainer
--> setProductSearch(productSearch)
--> MobileHeaderSearchContext
--> MobileHeader
+-> MobileAppChrome productSearch={productSearch}
+-> MobileHeader productSearch={productSearch}
 -> ProductSearch model={productSearch} variant="mobile"
 ```
+
+Asi la misma pagina crea la logica una vez y la entrega directo a sus dos headers.
 
 ## Boton Buscar y estado actual
 

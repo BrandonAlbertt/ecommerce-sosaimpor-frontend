@@ -1,18 +1,23 @@
 "use client";
 
 import { MobileFilterDrawer } from "@/components/movil/productos/MobileFilterDrawer";
+import type { ProductSearchModel } from "@/components/compartidos/layout/ProductSearch";
 
 import { MobileBottomNav } from "./MobileBottomNav";
 import { useMobileFilter } from "./MobileFilterContext";
 import { MobileHeader } from "./MobileHeader";
 
-export function MobileAppChrome() {
+type MobileAppChromeProps = {
+  productSearch?: ProductSearchModel;
+};
+
+export function MobileAppChrome({ productSearch }: MobileAppChromeProps) {
   const { closeFilters, filtersOpen } = useMobileFilter();
 
   return (
-    // Seccion movil global: header y barra inferior disponibles en todas las paginas.
+    // CHROME MOVIL REUTILIZABLE: HEADER, FILTROS Y BARRA INFERIOR DE LA PAGINA.
     <>
-      <MobileHeader />
+      <MobileHeader productSearch={productSearch} />
       <MobileFilterDrawer open={filtersOpen} onClose={closeFilters} />
       <MobileBottomNav />
     </>

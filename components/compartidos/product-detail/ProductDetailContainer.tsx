@@ -1,5 +1,6 @@
 import { DesktopFooter } from "@/components/escritorio/layout/DesktopFooter";
 import { DesktopHeader } from "@/components/escritorio/layout/DesktopHeader";
+import { MobileAppChrome } from "@/components/movil/layout/MobileAppChrome";
 import { catalogProducts } from "@/features/products/data/catalogData";
 
 import { ProductGrid } from "../productos/ProductGrid";
@@ -9,6 +10,7 @@ import { ProductInfo } from "./ProductInfo";
 export function ProductDetailContainer() {
   return (
     <div className="min-h-screen bg-white transition-colors duration-300 dark:bg-zinc-950">
+      <MobileAppChrome />
       <DesktopHeader />
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-6">
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">

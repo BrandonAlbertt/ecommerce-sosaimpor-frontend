@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/compartidos/ui/Button";
 import { DesktopFooter } from "@/components/escritorio/layout/DesktopFooter";
 import { DesktopHeader } from "@/components/escritorio/layout/DesktopHeader";
+import { MobileAppChrome } from "@/components/movil/layout/MobileAppChrome";
 
 import { CartItem } from "./CartItem";
 import { CartSummary } from "./CartSummary";
@@ -16,6 +17,7 @@ const cartItems = [
 export function CartPageContainer() {
   return (
     <div className="min-h-screen bg-white transition-colors duration-300 dark:bg-zinc-950">
+      <MobileAppChrome />
       <DesktopHeader />
       <main className="mx-auto max-w-7xl px-4 py-6">
         {/* ----- Carrito completo ----- */}
