@@ -6,7 +6,7 @@ import { Menu, Moon, Search, ShoppingCart, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { ProductSearch } from "@/components/compartidos/layout/ProductSearch";
-import type { ProductSearchModel } from "@/components/compartidos/layout/ProductSearch";
+import type { ProductSearchModel } from "@/features/products/types/productSearch.types";
 import { Input } from "@/components/compartidos/ui/Input";
 import { useMobileFilter } from "./MobileFilterContext";
 

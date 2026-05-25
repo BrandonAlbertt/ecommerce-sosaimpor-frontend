@@ -1,7 +1,7 @@
 "use client";
 
 import { MobileFilterDrawer } from "@/components/movil/productos/MobileFilterDrawer";
-import type { ProductSearchModel } from "@/components/compartidos/layout/ProductSearch";
+import type { ProductSearchModel } from "@/features/products/types/productSearch.types";
 
 import { MobileBottomNav } from "./MobileBottomNav";
 import { useMobileFilter } from "./MobileFilterContext";

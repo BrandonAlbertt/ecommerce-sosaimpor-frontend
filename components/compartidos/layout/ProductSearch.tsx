@@ -6,30 +6,9 @@ import { Search } from "lucide-react";
 import type { FormEvent } from "react";
 
 import { Input } from "@/components/compartidos/ui/Input";
-import type {
-  ProductApiItem,
-  ProductPagination,
-} from "@/features/products/types/product.types";
+import type { ProductSearchProps } from "@/features/products/types/productSearch.types";
 import { getSmallProductImage } from "@/features/products/utils/productImage";
 import { cn } from "@/lib/utils";
-
-// MODELO DE DATOS Y ACCIONES QUE LA BARRA RECIBE DESDE EL HOOK.
-export type ProductSearchModel = {
-  value: string;
-  suggestions: ProductApiItem[];
-  suggestionsPagination: ProductPagination | null;
-  isLoading: boolean;
-  error: string | null;
-  onValueChange: (value: string) => void;
-  onSubmit: () => void;
-  onShowMore: () => void;
-};
-
-// PROPS DEL COMPONENTE VISUAL DE BUSQUEDA.
-type ProductSearchProps = {
-  model: ProductSearchModel;
-  variant?: "desktop" | "mobile";
-};
 
 // LIMITE DE SUGERENCIAS VISIBLES EN EL DESPLEGABLE.
 const visibleSuggestionLimit = 4;

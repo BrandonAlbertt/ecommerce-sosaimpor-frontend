@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { ProductSearch } from "@/components/compartidos/layout/ProductSearch";
-import type { ProductSearchModel } from "@/components/compartidos/layout/ProductSearch";
+import type { ProductSearchModel } from "@/features/products/types/productSearch.types";
 import { ThemeToggle } from "@/components/compartidos/layout/ThemeToggle";
 import { Button } from "@/components/compartidos/ui/Button";
 import { Input } from "@/components/compartidos/ui/Input";

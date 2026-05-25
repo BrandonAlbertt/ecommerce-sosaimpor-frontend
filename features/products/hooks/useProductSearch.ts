@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 
-import type { ProductSearchModel } from "@/components/compartidos/layout/ProductSearch";
+import type { ProductSearchModel } from "@/features/products/types/productSearch.types";
 
 import { useProducts } from "./useProducts";
 
