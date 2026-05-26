@@ -5,7 +5,7 @@
 // Ayuda a que TypeScript avise si usamos un campo que no existe.
 
 // Tipo usado por los productos mock que ya existian en las cards del frontend.
-export type ProductCondition = "Usado importado" | "Usado local" | "Reacondicionado";
+export type ProductCondition = "Nuevo" | "Usado importado" | "Usado local" | "Reacondicionado";
 
 // Este Product describe la forma vieja/local que hoy usan algunas cards mock.
 // Se conserva para no romper la UI mientras se conecta la API real por partes.
@@ -14,9 +14,12 @@ export type Product = {
   slug: string;
   name: string;
   category: string;
+  categoryColor: string | null;
+  categoryTextColor: string | null;
   description: string;
   year: string;
   price: number;
+  image: string | null;
   availability: "Disponible" | "Proximamente";
   condition: ProductCondition;
 };
@@ -49,6 +52,8 @@ export type ProductApiItem = {
   destacado: boolean;
   categoria_id: number;
   categoria_nombre: string | null;
+  color_hex: string | null;
+  color_texto_hex: string | null;
   imagen_principal: string | null;
 };
 
@@ -73,6 +78,21 @@ export type ProductListParams = {
   stock?: number;
   destacado?: boolean;
 };
+
+// Filtros publicos permitidos en la tienda.
+// No incluye stock porque ese filtro pertenece principalmente al admin.
+export type PublicProductListParams = Omit<ProductListParams, "stock">;
+
+// Filtros que puede cambiar la UI sin tocar page ni limit.
+export type ProductFilterParams = Omit<PublicProductListParams, "limit" | "page">;
+
+export type ProductFilterKey = keyof ProductFilterParams;
+
+export type ProductFilterValue<Key extends ProductFilterKey = ProductFilterKey> =
+  | ProductFilterParams[Key]
+  | ""
+  | null
+  | undefined;
 
 // Informacion que devuelve la API para saber cuantas paginas existen.
 export type ProductPagination = {

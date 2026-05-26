@@ -1,16 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
+// HOOKS DE REACT
+import { useCallback, useEffect, useMemo } from "react";
 
+// COMPONENTES COMPARTIDOS Y DE LAYOUT
 import { DesktopFooter } from "@/components/escritorio/layout/DesktopFooter";
 import { DesktopHeader } from "@/components/escritorio/layout/DesktopHeader";
 import { CartPreview } from "@/components/escritorio/productos/CartPreview";
 import { MobileAppChrome } from "@/components/movil/layout/MobileAppChrome";
 import { useMobileFilter } from "@/components/movil/layout/MobileFilterContext";
-import { catalogCategories, catalogProducts } from "@/features/products/data/catalogData";
+// DATOS Y HOOKS DE PRODUCTOS
+import { catalogCategories } from "@/features/products/data/catalogData";
+import { useProductFilterOptions } from "@/features/products/hooks/useProductFilterOptions";
+import { useProductFilters } from "@/features/products/hooks/useProductFilters";
 import { useProductSearch } from "@/features/products/hooks/useProductSearch";
+import { apiProductToProduct } from "@/features/products/utils/productAdapter";
+// ICONOS
 import { SlidersHorizontal } from "lucide-react";
 
+// COMPONENTES DE LA SECCION DE PRODUCTOS
 import { CategoryStrip } from "./CategoryStrip";
 import { ProductFilters } from "./ProductFilters";
 import { ProductGrid } from "./ProductGrid";
@@ -67,11 +75,36 @@ function BenefitsBar() {
   );
 }
 
+// ============================================================
+// COMPONENTE PRINCIPAL EXPORTADO DE LA PAGINA DE PRODUCTOS
+// ============================================================
 export function ProductPageContainer() {
   // LOGICA DE FILTROS MOVILES: ABRE EL PANEL DESDE LA CABECERA.
   const { openFilters } = useMobileFilter();
+  // OPCIONES DE FILTROS: SE CARGAN UNA VEZ Y SE COMPARTEN ENTRE DESKTOP Y MOVIL.
+  const filterOptions = useProductFilterOptions();
+  // PRODUCTOS DEL CATALOGO: SE CARGAN DESDE LA API Y CAMBIAN AL APLICAR FILTROS.
+  const productFilters = useProductFilters();
+  const { applyFilters, filters } = productFilters;
+  // BUSQUEDA: AL ENVIAR TEXTO, LO APLICA AL MISMO CATALOGO QUE USAN LOS FILTROS.
+  const handleSearchSubmit = useCallback(
+    (search: string) => {
+      applyFilters({
+        ...filters,
+        search,
+      });
+    },
+    [applyFilters, filters],
+  );
   // LOGICA PRINCIPAL: OBTIENE EL ESTADO DE BUSQUEDA Y LOS RESULTADOS.
-  const { productSearch, results, submittedSearch } = useProductSearch();
+  const { productSearch, results, submittedSearch } = useProductSearch({
+    onSearchSubmit: handleSearchSubmit,
+  });
+  const catalogProducts = useMemo(
+    () => productFilters.products.map(apiProductToProduct),
+    [productFilters.products],
+  );
+  const filterFormKey = JSON.stringify(productFilters.filters);
 
   // LOGICA DE RESULTADOS: REGISTRA EL ESTADO FINAL DE LA BUSQUEDA CUANDO YA CARGO.
   useEffect(() => {
@@ -101,19 +134,34 @@ export function ProductPageContainer() {
     submittedSearch,
   ]);
 
+  // Renderizado principal
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white transition-colors duration-300 dark:bg-zinc-950">
       {/* CHROME MOVIL: RECIBE LA MISMA BUSQUEDA QUE EL HEADER DE ESCRITORIO. */}
-      <MobileAppChrome productSearch={productSearch} />
+      <MobileAppChrome 
+          filterOptions={filterOptions} 
+          filters={productFilters.filters}
+          onApplyFilters={productFilters.applyFilters}
+          onClearFilters={productFilters.clearFilters}
+          productSearch={productSearch} 
+      />
       {/* PARTE ESCRITORIO */}
       {/* HEADER PARA PANTALLAS MEDIANAS Y GRANDES. */}
-      <DesktopHeader productSearch={productSearch} />
+      <DesktopHeader 
+          productSearch={productSearch} 
+      />
 
       <main className="mx-auto w-full max-w-480 overflow-x-hidden px-4 pb-28 pt-3 md:px-4 md:py-5">
         <div className="grid min-w-0 gap-5 xl:grid-cols-[270px_minmax(0,1fr)_300px]">
           {/* FILTROS LATERALES SOLO EN ESCRITORIO. */}
           <div className="hidden xl:block">
-            <ProductFilters />
+            <ProductFilters 
+                key={filterFormKey}
+                filterOptions={filterOptions} 
+                filters={productFilters.filters}
+                onApplyFilters={productFilters.applyFilters}
+                onClearFilters={productFilters.clearFilters}
+            />
           </div>
 
           <div className="min-w-0 max-w-full space-y-5">
@@ -133,7 +181,13 @@ export function ProductPageContainer() {
               </button>
             </div>
 
-            <ProductGrid products={catalogProducts} />
+            <ProductGrid
+              error={productFilters.error}
+              isLoading={productFilters.loading}
+              onPageChange={productFilters.changePage}
+              pagination={productFilters.pagination}
+              products={catalogProducts}
+            />
           </div>
 
           {/* carrito visible en escritorio */}

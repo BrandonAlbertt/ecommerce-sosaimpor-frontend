@@ -1,20 +1,34 @@
 "use client";
 
+// ============================================================
+// HOOK PARA BUSQUEDA DE PRODUCTOS
+// ============================================================
+// Funcionalidad: barra de busqueda y sugerencias.
+// Sirve para manejar texto escrito, sugerencias y busqueda enviada.
+// Devuelve: productSearch, results y submittedSearch.
+//
+
 import { useCallback, useMemo, useState } from "react";
 
 import type { ProductSearchModel } from "@/features/products/types/productSearch.types";
 
-import { useProducts } from "./useProducts";
+import { useProductRaiz } from "./useProductRaiz";
 
 const suggestionLimit = 4;
 const searchResultLimit = 12;
 
-export function useProductSearch() {
+type UseProductSearchOptions = {
+  onSearchSubmit?: (search: string) => void;
+};
+
+export function useProductSearch({
+  onSearchSubmit,
+}: UseProductSearchOptions = {}) {
   const [searchValue, setSearchValue] = useState("");
   const [submittedSearch, setSubmittedSearch] = useState("");
   const cleanSearch = searchValue.trim();
 
-  const suggestions = useProducts(
+  const suggestions = useProductRaiz(
     {
       search: cleanSearch,
       page: 1,
@@ -25,7 +39,7 @@ export function useProductSearch() {
     },
   );
 
-  const results = useProducts(
+  const results = useProductRaiz(
     {
       search: submittedSearch,
       page: 1,
@@ -47,10 +61,13 @@ export function useProductSearch() {
       }
 
       setSubmittedSearch(cleanSearch);
+      onSearchSubmit?.(cleanSearch);
     },
-    [cleanSearch],
+    [cleanSearch, onSearchSubmit],
   );
 
+  // este usa a useMemo y sa una estrutura de datos que se llama ProductSearchModel, para crear un objeto productSearch
+  // que contiene datos de la busqueda, este recibe datos del input de busqueda y los resultados de las sugerencias.
   const productSearch = useMemo<ProductSearchModel>(
     () => ({
       value: searchValue,

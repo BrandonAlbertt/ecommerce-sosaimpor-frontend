@@ -16,6 +16,7 @@ type MobileFilterProviderProps = {
 };
 
 export function MobileFilterProvider({ children }: MobileFilterProviderProps) {
+  // Este provider es el padre del estado compartido: abre y cierra el drawer movil.
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const value = useMemo(
@@ -31,6 +32,7 @@ export function MobileFilterProvider({ children }: MobileFilterProviderProps) {
 }
 
 export function useMobileFilter() {
+  // El hijo que lo use recibe el estado desde el provider, no desde props directas.
   const context = useContext(MobileFilterContext);
 
   if (!context) {

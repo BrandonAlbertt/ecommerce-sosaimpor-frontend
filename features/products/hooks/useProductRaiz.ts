@@ -1,16 +1,20 @@
 "use client";
 
 // ============================================================
-// HOOK PARA LISTAR, BUSCAR Y FILTRAR PRODUCTOS
+// HOOK RAIZ DE CONSULTA DE PRODUCTOS
 // ============================================================
-// Un hook junta logica que un componente puede reutilizar.
-// Este hook evita poner la peticion API dentro de cada pantalla.
+// Funcionalidad: punto comun para pedir productos a la API publica.
+// Sirve como base para otros hooks, por ejemplo busqueda y filtros.
+// No maneja UI, selects, botones ni reglas especificas de pantalla.
+// Recibe params listos, consulta /api/productos y mantiene el estado de la respuesta.
+// Devuelve: products, pagination, isLoading y error.
+// Uso esperado: llamarlo desde useProductSearch o useProductFilters.
 //
 // Flujo sencillo:
-// 1. Un componente TSX llama a useProducts({ search: "faro" }).
-// 2. Este hook pide los productos a productsApi.ts.
+// 1. Un hook de negocio llama a useProductRaiz({ search: "faro" }).
+// 2. useProductRaiz arma una consulta estable con esos params.
 // 3. productsApi.ts usa axiosClient.ts para hablar con el backend.
-// 4. El componente recibe products, pagination, isLoading y error.
+// 4. El hook de negocio recibe products, pagination, isLoading y error.
 
 import { useEffect, useState } from "react";
 
@@ -51,22 +55,22 @@ const initialState: ProductRequestState = {
   queryString: null,
 };
 
-// >>> HOOK IMPORTANTE: USE PRODUCTS <<<
+// >>> HOOK BASE: USE PRODUCT RAIZ <<<
 // Recibe filtros y devuelve el estado listo para usar en una pantalla.
 //
-// El componente TSX decide que mandar aqui:
-// useProducts({ page: 1, limit: 12 })
+// Los hooks de negocio deciden que mandar aqui:
+// useProductRaiz({ page: 1, limit: 12 })
 //   -> solo listado paginado.
 //
-// useProducts({ search: "faro", page: 1, limit: 12 })
+// useProductRaiz({ search: "faro", page: 1, limit: 12 })
 //   -> agrega search para la barra de busqueda.
 //
-// useProducts({ marca: "Toyota", page: 1, limit: 12 })
+// useProductRaiz({ marca: "Toyota", page: 1, limit: 12 })
 //   -> agrega un filtro.
 //
-// useProducts({ categoria_id: 1, marca: "Toyota", search: "faro", page: 1, limit: 12 })
+// useProductRaiz({ categoria_id: 1, marca: "Toyota", search: "faro", page: 1, limit: 12 })
 //   -> combina varios filtros con la busqueda.
-export function useProducts(
+export function useProductRaiz(
   params: ProductListParams = {},
   { enabled = true }: UseProductsOptions = {},
 ) {
@@ -151,10 +155,10 @@ EJEMPLO TSX 1: CATALOGO CON FILTROS
 
 "use client";
 
-import { useProducts } from "@/features/products/hooks/useProducts";
+import { useProductRaiz } from "@/features/products/hooks/useProductRaiz";
 
 export function ProductsListExample() {
-  const { products, pagination, isLoading, error } = useProducts({
+  const { products, pagination, isLoading, error } = useProductRaiz({
     page: 1,
     limit: 12,
     search: "faro",
@@ -184,11 +188,11 @@ EJEMPLO TSX 2: SUGERENCIAS DE BARRA DE BUSQUEDA
 "use client";
 
 import { useState } from "react";
-import { useProducts } from "@/features/products/hooks/useProducts";
+import { useProductRaiz } from "@/features/products/hooks/useProductRaiz";
 
 export function ProductSearchExample() {
   const [search, setSearch] = useState("");
-  const suggestions = useProducts(
+  const suggestions = useProductRaiz(
     { search, page: 1, limit: 4 },
     { enabled: search.trim().length >= 2 },
   );

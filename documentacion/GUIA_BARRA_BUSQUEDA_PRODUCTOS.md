@@ -7,8 +7,8 @@ La busqueda de productos se crea una sola vez en `ProductPageContainer` mediante
 ```mermaid
 flowchart TD
   A[ProductPageContainer] --> B[useProductSearch]
-  B --> C[useProducts<br/>sugerencias]
-  B --> D[useProducts<br/>resultados enviados]
+  B --> C[useProductRaiz<br/>sugerencias]
+  B --> D[useProductRaiz<br/>resultados enviados]
   C --> E[productsApi.ts]
   D --> E
   E --> F[axiosClient.ts]
@@ -28,7 +28,7 @@ flowchart TD
 | `components/compartidos/layout/ProductSearch.tsx` | Componente visual de la barra. |
 | `features/products/types/productSearch.types.ts` | Tipos `ProductSearchModel` y `ProductSearchProps`. |
 | `features/products/hooks/useProductSearch.ts` | Estado y acciones de busqueda. |
-| `features/products/hooks/useProducts.ts` | Consulta productos. |
+| `features/products/hooks/useProductRaiz.ts` | Hook base interno para consultar productos. |
 | `features/products/api/productsApi.ts` | Arma llamadas a la API de productos. |
 | `lib/axiosClient.ts` | Ejecuta la peticion HTTP. |
 
@@ -58,7 +58,7 @@ sequenceDiagram
   participant U as Usuario
   participant UI as ProductSearch
   participant Hook as useProductSearch
-  participant Products as useProducts
+  participant Products as useProductRaiz
   participant API as productsApi.ts
   participant Backend as Backend
 
@@ -81,7 +81,7 @@ flowchart LR
   A[Usuario presiona Buscar] --> B[ProductSearch]
   B --> C[onSubmit]
   C --> D[submittedSearch]
-  D --> E[useProducts limit 12]
+  D --> E[useProductRaiz limit 12]
   E --> F[Resultados listos para catalogo]
 ```
 
@@ -91,4 +91,3 @@ flowchart LR
 - Los tipos compartidos deben quedarse en `features/products/types/`.
 - El limite visible del desplegable puede quedarse cerca del componente si solo afecta a esa UI.
 - Las llamadas HTTP deben pasar por `productsApi.ts` y `axiosClient.ts`.
-

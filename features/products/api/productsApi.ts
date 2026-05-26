@@ -86,7 +86,7 @@ export function getProducts(params: ProductListParams = {}, signal?: AbortSignal
 }
 
 // Esta version recibe el texto de filtros ya armado.
-// El hook useProducts la usa para repetir la consulta solo cuando cambian los filtros.
+// El hook base useProductRaiz la usa para repetir la consulta solo cuando cambian los filtros.
 export function getProductsByQueryString(queryString: string, signal?: AbortSignal) {
   // >>> AQUI SE PEGA EL TEXTO FINAL A LA RUTA <<<
   //

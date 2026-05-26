@@ -1,18 +1,37 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, ShoppingCart } from "lucide-react";
 
 import type { Product } from "@/features/products/types/product.types";
+import { getCatalogProductImage } from "@/features/products/utils/productImage";
 
 type MobileProductCardProps = {
   product: Product;
 };
 
 const badgeColors: Record<string, string> = {
+  Accesorios: "bg-purple-700",
+  "Aros y Llantas": "bg-blue-800",
+  Capós: "bg-zinc-700",
+  Espejos: "bg-cyan-700",
   Motores: "bg-blue-800",
+  Motor: "bg-blue-800",
   Faros: "bg-amber-500",
   Parachoques: "bg-slate-700",
   Suspension: "bg-teal-600",
+  Suspensión: "bg-teal-600",
   Frenos: "bg-red-700",
+  Guardafangos: "bg-lime-700",
+  Interiores: "bg-orange-900",
+  Maleteras: "bg-fuchsia-800",
+  Manijas: "bg-stone-700",
+  Molduras: "bg-neutral-700",
+  Neblineros: "bg-indigo-700",
+  Puertas: "bg-emerald-700",
+  Radiadores: "bg-sky-800",
+  Rejillas: "bg-violet-800",
+  Transmisión: "bg-rose-800",
+  Vidrios: "bg-blue-600",
 };
 
 export function MobileProductCard({ product }: MobileProductCardProps) {
@@ -22,21 +41,41 @@ export function MobileProductCard({ product }: MobileProductCardProps) {
       <Link className="block" href={`/productos/${product.slug}`}>
         <div className="relative aspect-[4/3] max-h-48 min-h-36 w-full bg-zinc-50 dark:bg-zinc-800">
           <span
-            className={`absolute left-2 top-2 rounded-full px-2 py-1 text-[9px] font-black uppercase text-white ${
-              badgeColors[product.category] ?? "bg-zinc-800"
+            className={`absolute left-2 top-2 z-10 rounded-full px-2 py-1 text-[9px] font-black uppercase text-white ${
+              product.categoryColor ? "" : badgeColors[product.category] ?? "bg-zinc-800"
             }`}
+            style={
+              product.categoryColor
+                ? {
+                    backgroundColor: product.categoryColor,
+                    color: product.categoryTextColor ?? "#FFFFFF",
+                  }
+                : undefined
+            }
           >
             {product.category}
           </span>
           <button
             aria-label="Agregar a favoritos"
-            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white/95 text-zinc-600 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/95 dark:text-zinc-300"
+            className="absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white/95 text-zinc-600 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/95 dark:text-zinc-300"
             type="button"
           >
             <Heart size={16} suppressHydrationWarning />
           </button>
           <div className="flex h-full items-center justify-center text-[11px] font-black text-zinc-400 dark:text-zinc-500">
-            IMAGEN
+            {product.image ? (
+              <Image
+                alt={product.name}
+                className="h-full w-full object-cover"
+                height={180}
+                quality={45}
+                sizes="(max-width: 767px) 50vw, 180px"
+                src={getCatalogProductImage(product.image)}
+                width={240}
+              />
+            ) : (
+              "IMAGEN"
+            )}
           </div>
         </div>
       </Link>

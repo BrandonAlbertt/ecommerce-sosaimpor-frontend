@@ -1,18 +1,37 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { Button } from "@/components/compartidos/ui/Button";
 import { Product } from "@/features/products/types/product.types";
+import { getCatalogProductImage } from "@/features/products/utils/productImage";
 
 type ProductCardBaseProps = {
   product: Product;
 };
 
 const badgeColors: Record<string, string> = {
+  Accesorios: "bg-purple-700",
+  "Aros y Llantas": "bg-blue-800",
+  Capós: "bg-zinc-700",
+  Espejos: "bg-cyan-700",
   Motores: "bg-blue-800",
+  Motor: "bg-blue-800",
   Faros: "bg-amber-500",
   Parachoques: "bg-slate-700",
   Suspension: "bg-teal-600",
+  Suspensión: "bg-teal-600",
   Frenos: "bg-red-700",
+  Guardafangos: "bg-lime-700",
+  Interiores: "bg-orange-900",
+  Maleteras: "bg-fuchsia-800",
+  Manijas: "bg-stone-700",
+  Molduras: "bg-neutral-700",
+  Neblineros: "bg-indigo-700",
+  Puertas: "bg-emerald-700",
+  Radiadores: "bg-sky-800",
+  Rejillas: "bg-violet-800",
+  Transmisión: "bg-rose-800",
+  Vidrios: "bg-blue-600",
 };
 
 export function ProductCardBase({ product }: ProductCardBaseProps) {
@@ -20,9 +39,17 @@ export function ProductCardBase({ product }: ProductCardBaseProps) {
     <article className="rounded-lg border border-zinc-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
       <div className="relative p-3">
         <span
-          className={`absolute left-3 top-3 rounded px-2 py-1 text-[10px] font-black uppercase text-white ${
-            badgeColors[product.category] ?? "bg-zinc-800"
+          className={`absolute left-3 top-3 z-10 rounded px-2 py-1 text-[10px] font-black uppercase text-white ${
+            product.categoryColor ? "" : badgeColors[product.category] ?? "bg-zinc-800"
           }`}
+          style={
+            product.categoryColor
+              ? {
+                  backgroundColor: product.categoryColor,
+                  color: product.categoryTextColor ?? "#FFFFFF",
+                }
+              : undefined
+          }
         >
           {product.category}
         </span>
@@ -33,8 +60,20 @@ export function ProductCardBase({ product }: ProductCardBaseProps) {
         >
           ♡
         </button>
-        <div className="flex h-36 items-center justify-center rounded-lg bg-zinc-50 text-[11px] font-black text-zinc-400 transition-colors duration-300 dark:bg-zinc-800 dark:text-zinc-500">
-          IMAGEN PRODUCTO
+        <div className="relative flex h-36 items-center justify-center overflow-hidden rounded-lg bg-zinc-50 text-[11px] font-black text-zinc-400 transition-colors duration-300 dark:bg-zinc-800 dark:text-zinc-500">
+          {product.image ? (
+            <Image
+              alt={product.name}
+              className="h-full w-full object-cover"
+              height={144}
+              quality={45}
+              sizes="(min-width: 1280px) 220px, 180px"
+              src={getCatalogProductImage(product.image)}
+              width={220}
+            />
+          ) : (
+            "IMAGEN PRODUCTO"
+          )}
         </div>
       </div>
 

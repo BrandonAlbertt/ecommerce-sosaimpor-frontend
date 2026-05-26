@@ -24,8 +24,8 @@ flowchart TD
 
 | Zona | Archivos | Funcion |
 | --- | --- | --- |
-| `features/products/types/` | `product.types.ts`, `productSearch.types.ts` | Define la forma de productos, filtros, respuestas y busqueda. |
-| `features/products/hooks/` | `useProducts.ts`, `useProductSearch.ts`, `useProductFilterOptions.ts` | Conecta componentes con datos y estados reutilizables. |
+| `features/products/types/` | `product.types.ts`, `productSearch.types.ts`, `productFilterOptions.types.ts` | Define la forma de productos, filtros, respuestas, busqueda y estado de opciones. |
+| `features/products/hooks/` | `useProductRaiz.ts`, `useProductSearch.ts`, `useProductFilters.ts`, `useProductFilterOptions.ts` | Conecta componentes con datos y estados reutilizables. |
 | `features/products/api/` | `productsApi.ts` | Traduce parametros del frontend a rutas del backend. |
 | `features/products/data/` | `catalogData.ts` | Datos locales temporales o estaticos para la UI. |
 | `features/products/utils/` | `productImage.ts` | Helper para adaptar imagenes de producto. |
@@ -62,9 +62,9 @@ Define los contratos principales de productos.
 | --- | --- | --- |
 | `Product` | Producto local usado por cards mock actuales. | `ProductGrid`, `MobileProductGrid`, `DesktopProductGrid`, `ProductCardBase`, `MobileProductCard`, `catalogData.ts`. |
 | `CategoryItem` | Categoria local para tiras y grillas. | `catalogData.ts`, `CategoryStrip` por medio de props. |
-| `ProductApiItem` | Producto real que llega desde la API. | `useProducts.ts`, `productSearch.types.ts`. |
-| `ProductListParams` | Filtros que el frontend puede enviar como query params. | `productsApi.ts`, `useProducts.ts`. |
-| `ProductPagination` | Estado de paginacion del backend. | `useProducts.ts`, `productSearch.types.ts`. |
+| `ProductApiItem` | Producto real que llega desde la API. | `useProductRaiz.ts`, `productSearch.types.ts`. |
+| `ProductListParams` | Filtros que el frontend puede enviar como query params. | `productsApi.ts`, `useProductRaiz.ts`. |
+| `ProductPagination` | Estado de paginacion del backend. | `useProductRaiz.ts`, `productSearch.types.ts`. |
 | `ProductListResponse` | Respuesta de `GET /api/productos`. | `productsApi.ts`. |
 | `ProductFilterOptions` | Opciones para construir filtros. | `useProductFilterOptions.ts`. |
 | `ProductFilterOptionsResponse` | Respuesta de `GET /api/productos/filtros-opciones`. | `productsApi.ts`. |
@@ -126,6 +126,24 @@ flowchart LR
   E --> G[ProductSearch mobile]
 ```
 
+### `features/products/types/productFilterOptions.types.ts`
+
+Define el modelo que viaja desde `useProductFilterOptions` hacia los componentes de filtros.
+
+| Tipo | Funcion | Donde va |
+| --- | --- | --- |
+| `ProductFilterOptionsModel` | Estado de opciones, carga y error del formulario de filtros. | Sale de `useProductFilterOptions` y entra en `ProductPageContainer`, `MobileAppChrome`, `MobileFilterDrawer` y `ProductFilters`. |
+
+```mermaid
+flowchart LR
+  A[useProductFilterOptions] --> B[ProductFilterOptionsModel]
+  B --> C[ProductPageContainer]
+  C --> D[ProductFilters desktop]
+  C --> E[MobileAppChrome]
+  E --> F[MobileFilterDrawer]
+  F --> G[ProductFilters mobile]
+```
+
 ## FEATURES PRODUCTS API
 
 ### `features/products/api/productsApi.ts`
@@ -134,14 +152,14 @@ Este archivo es el intermediario entre hooks y backend. Los componentes no deber
 
 | Funcion | Que hace | Consumidor |
 | --- | --- | --- |
-| `createProductsQueryString` | Convierte filtros en query string. | `useProducts.ts`, `getProducts`. |
+| `createProductsQueryString` | Convierte filtros en query string. | `useProductRaiz.ts`, `getProducts`. |
 | `getProducts` | Recibe params y pide productos. | Disponible para hooks o futuras pantallas. |
-| `getProductsByQueryString` | Pide productos con query string ya armado. | `useProducts.ts`. |
+| `getProductsByQueryString` | Pide productos con query string ya armado. | `useProductRaiz.ts`. |
 | `getProductFilterOptions` | Pide categorias, marcas, modelos, anios, precios y disponibilidad. | `useProductFilterOptions.ts`. |
 
 ```mermaid
 sequenceDiagram
-  participant Hook as useProducts
+  participant Hook as useProductRaiz
   participant Api as productsApi.ts
   participant Client as axiosClient.ts
   participant Backend as Backend
@@ -157,7 +175,7 @@ sequenceDiagram
 
 ## FEATURES PRODUCTS HOOKS
 
-### `features/products/hooks/useProducts.ts`
+### `features/products/hooks/useProductRaiz.ts`
 
 Hook generico para listar, buscar y filtrar productos.
 
@@ -167,7 +185,7 @@ Hook generico para listar, buscar y filtrar productos.
 
 ```mermaid
 flowchart TD
-  A[Parametros de producto] --> B[useProducts]
+  A[Parametros de producto] --> B[useProductRaiz]
   B --> C{enabled?}
   C -- No --> D[Estado inicial]
   C -- Si --> E[createProductsQueryString]
@@ -355,11 +373,12 @@ flowchart TD
 
 | Componente | Recibe desde features/lib/providers |
 | --- | --- |
-| `ProductPageContainer` | `catalogProducts`, `catalogCategories`, `useProductSearch`. |
+| `ProductPageContainer` | `catalogProducts`, `catalogCategories`, `useProductSearch`, `useProductFilterOptions`. |
 | `ProductSearch` | `ProductSearchProps`, `getSmallProductImage`, `cn`. |
 | `DesktopHeader` | `ProductSearchModel`. |
-| `MobileAppChrome` | `ProductSearchModel`. |
+| `MobileAppChrome` | `ProductSearchModel`, `ProductFilterOptionsModel` cuando viene desde el catalogo. |
 | `MobileHeader` | `ProductSearchModel`, tema por `ThemeProvider`. |
+| `ProductFilters` | `ProductFilterOptionsModel`, `cn`. |
 | `ProductGrid` | `Product`. |
 | `MobileProductGrid` | `Product`. |
 | `DesktopProductGrid` | `Product`. |
@@ -392,4 +411,3 @@ Regla practica:
 - Si guarda logica reutilizable de React, va en `features/*/hooks`.
 - Si transforma datos sin JSX, va en `features/*/utils` o `lib`.
 - Si envuelve la app con contexto global, va en `providers`.
-

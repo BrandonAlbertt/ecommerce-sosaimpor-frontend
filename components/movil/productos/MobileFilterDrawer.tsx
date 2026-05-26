@@ -3,20 +3,34 @@
 import { X } from "lucide-react";
 
 import { ProductFilters } from "@/components/compartidos/productos/ProductFilters";
+import type { ProductFilterParams } from "@/features/products/types/product.types";
+import type { ProductFilterOptionsModel } from "@/features/products/types/productFilterOptions.types";
 
 type MobileFilterDrawerProps = {
+  filterOptions: ProductFilterOptionsModel;
+  filters: ProductFilterParams;
+  onApplyFilters: (filters: ProductFilterParams) => void;
+  onClearFilters: () => void;
   open: boolean;
   onClose: () => void;
 };
 
-export function MobileFilterDrawer({ open, onClose }: MobileFilterDrawerProps) {
+export function MobileFilterDrawer({ 
+  filterOptions, 
+  filters,
+  onApplyFilters,
+  onClearFilters,
+  open, 
+  onClose 
+}: MobileFilterDrawerProps) {
   if (!open) {
     return null;
   }
 
   return (
-    // Seccion movil: drawer que reutiliza los mismos filtros compartidos de escritorio.
-    <div className="fixed inset-0 z-[60] md:hidden">
+    // Este drawer es el hijo visual que se abre desde MobileFilterContext.
+    // Aqui se reutiliza ProductFilters, que es el mismo componente base de escritorio.
+    <div className="fixed inset-0 z-60 md:hidden">
       <button
         aria-label="Cerrar filtros"
         className="absolute inset-0 bg-zinc-950/45"
@@ -38,7 +52,16 @@ export function MobileFilterDrawer({ open, onClose }: MobileFilterDrawerProps) {
             <X size={18} suppressHydrationWarning />
           </button>
         </div>
-        <ProductFilters />
+        <ProductFilters
+          filterOptions={filterOptions}
+          filters={filters}
+          onApplyFilters={(nextFilters) => {
+            onApplyFilters(nextFilters);
+            onClose();
+          }}
+          onClearFilters={onClearFilters}
+          variant="mobile"
+        />
       </aside>
     </div>
   );
