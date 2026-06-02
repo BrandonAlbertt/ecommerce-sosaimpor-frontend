@@ -141,6 +141,15 @@ export function ProductFilters({
     };
   }
 
+  function updateAvailabilityFilter(event: ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target;
+
+    setDraftFilters((currentFilters) => ({
+      ...currentFilters,
+      disponibilidad: value === "proximamente" ? "proximamente" : undefined,
+    }));
+  }
+
   // ACTUALIZA COMBOS: RECIBE EL VALOR DEL COMBO CON SCROLL.
   function updateComboFilter(key: keyof ProductFilterParams) {
     return (value: number | string | undefined) => {
@@ -412,10 +421,14 @@ export function ProductFilters({
             <label key={availability} className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
               <input
                 className="accent-red-600"
-                checked={draftFilters.disponibilidad === availability}
+                checked={
+                  draftFilters.disponibilidad
+                    ? draftFilters.disponibilidad === availability
+                    : availability === "disponible"
+                }
                 disabled={disabled}
                 name="disponibilidad"
-                onChange={updateTextFilter("disponibilidad")}
+                onChange={updateAvailabilityFilter}
                 type="radio"
                 value={availability}
               />

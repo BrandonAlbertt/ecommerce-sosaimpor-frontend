@@ -1,9 +1,14 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { useCallback, useState } from "react";
+
+import { StoreLocationModal } from "@/components/compartidos/layout/StoreLocationModal";
 import { Button } from "@/components/compartidos/ui/Button";
-import { DesktopFooter } from "@/components/escritorio/layout/DesktopFooter";
 import { DesktopHeader } from "@/components/escritorio/layout/DesktopHeader";
 import { MobileAppChrome } from "@/components/movil/layout/MobileAppChrome";
+import { useProductSearchNavigation } from "@/features/products/hooks/useProductSearchNavigation";
+import { storeLocation } from "@/features/store/storeLocation";
 
 import { CartItem } from "./CartItem";
 import { CartSummary } from "./CartSummary";
@@ -15,10 +20,20 @@ const cartItems = [
 ];
 
 export function CartPageContainer() {
+  const [locationOpen, setLocationOpen] = useState(false);
+  const { productSearch } = useProductSearchNavigation();
+  const openLocation = useCallback(() => setLocationOpen(true), []);
+  const closeLocation = useCallback(() => setLocationOpen(false), []);
+
   return (
     <div className="min-h-screen bg-white transition-colors duration-300 dark:bg-zinc-950">
-      <MobileAppChrome />
-      <DesktopHeader />
+      <MobileAppChrome productSearch={productSearch} />
+      <DesktopHeader onLocationClick={openLocation} productSearch={productSearch} />
+      <StoreLocationModal
+        location={storeLocation}
+        onClose={closeLocation}
+        open={locationOpen}
+      />
       <main className="mx-auto max-w-7xl px-4 py-6">
         {/* ----- Carrito completo ----- */}
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -40,7 +55,6 @@ export function CartPageContainer() {
           <CartSummary />
         </div>
       </main>
-      <DesktopFooter />
     </div>
   );
 }

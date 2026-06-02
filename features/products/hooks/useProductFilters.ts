@@ -95,6 +95,7 @@ export function useProductFilters({
   }, []);
 
   return {
+    accumulatedProducts: productsState.accumulatedProducts,
     products: productsState.products,
     pagination: productsState.pagination,
     loading: productsState.isLoading,

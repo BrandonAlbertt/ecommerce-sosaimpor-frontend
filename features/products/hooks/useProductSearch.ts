@@ -8,14 +8,15 @@
 // Devuelve: productSearch, results y submittedSearch.
 //
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { ProductSearchModel } from "@/features/products/types/productSearch.types";
 
 import { useProductRaiz } from "./useProductRaiz";
 
 const suggestionLimit = 4;
-const searchResultLimit = 12;
+const minimumSearchLength = 3;
+const searchDebounceMs = 350;
 
 type UseProductSearchOptions = {
   onSearchSubmit?: (search: string) => void;
@@ -26,27 +27,33 @@ export function useProductSearch({
 }: UseProductSearchOptions = {}) {
   const [searchValue, setSearchValue] = useState("");
   const [submittedSearch, setSubmittedSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const cleanSearch = searchValue.trim();
+  const canRequestSuggestions =
+    cleanSearch.length >= minimumSearchLength &&
+    debouncedSearch === cleanSearch;
+
+  useEffect(() => {
+    if (cleanSearch.length < minimumSearchLength) {
+      return;
+    }
+
+    // Espera una pausa corta para no consultar al backend por cada tecla.
+    const debounceId = window.setTimeout(() => {
+      setDebouncedSearch(cleanSearch);
+    }, searchDebounceMs);
+
+    return () => window.clearTimeout(debounceId);
+  }, [cleanSearch]);
 
   const suggestions = useProductRaiz(
     {
-      search: cleanSearch,
+      search: debouncedSearch,
       page: 1,
       limit: suggestionLimit,
     },
     {
-      enabled: cleanSearch.length > 0,
-    },
-  );
-
-  const results = useProductRaiz(
-    {
-      search: submittedSearch,
-      page: 1,
-      limit: searchResultLimit,
-    },
-    {
-      enabled: submittedSearch.length > 0,
+      enabled: canRequestSuggestions,
     },
   );
 
@@ -56,12 +63,13 @@ export function useProductSearch({
 
   const requestSearchResults = useCallback(
     () => {
-      if (!cleanSearch) {
+      if (cleanSearch.length < minimumSearchLength) {
         return;
       }
 
       setSubmittedSearch(cleanSearch);
       onSearchSubmit?.(cleanSearch);
+      setSearchValue("");
     },
     [cleanSearch, onSearchSubmit],
   );
@@ -92,7 +100,6 @@ export function useProductSearch({
 
   return {
     productSearch,
-    results,
     submittedSearch,
   };
 }

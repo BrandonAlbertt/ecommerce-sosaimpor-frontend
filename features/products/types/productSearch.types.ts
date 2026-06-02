@@ -17,6 +17,7 @@ export type ProductSearchModel = {
 
 // PROPS DEL COMPONENTE VISUAL DE BUSQUEDA.
 export type ProductSearchProps = {
+  inputId?: string;
   model: ProductSearchModel;
   variant?: "desktop" | "mobile";
 };

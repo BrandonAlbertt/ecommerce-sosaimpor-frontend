@@ -34,6 +34,7 @@ type UseProductsOptions = {
 
 // Datos simples que el componente recibira desde este hook.
 type UseProductsState = {
+  accumulatedProducts: ProductApiItem[];
   products: ProductApiItem[];
   pagination: ProductPagination | null;
   error: string | null;
@@ -48,6 +49,7 @@ type ProductRequestState = UseProductsState & {
 
 // Estado inicial antes de pedir productos.
 const initialState: ProductRequestState = {
+  accumulatedProducts: [],
   products: [],
   pagination: null,
   error: null,
@@ -100,14 +102,27 @@ export function useProductRaiz(
     // >>> PASO CLAVE: PEDIR PRODUCTOS AL ARCHIVO API <<<
     getProductsByQueryString(queryString, controller.signal)
       .then((response) => {
+        const responsePage = response.pagination?.page ?? 1;
+
         // Si la API responde bien, guardamos productos y paginacion.
-        setState({
+        setState((currentState) => ({
+          accumulatedProducts:
+            responsePage === 1
+              ? response.data
+              : [
+                  ...currentState.accumulatedProducts,
+                  ...response.data.filter((product) => (
+                    !currentState.accumulatedProducts.some((currentProduct) => (
+                      currentProduct.id === product.id
+                    ))
+                  )),
+                ],
           products: response.data,
           pagination: response.pagination,
           error: null,
           isLoading: false,
           queryString,
-        });
+        }));
       })
       .catch((error: unknown) => {
         // Una cancelacion no es un error para el usuario.
@@ -136,7 +151,10 @@ export function useProductRaiz(
   // Si cambiaron los filtros y aun no llego la respuesta nueva,
   // la pantalla puede mostrar "cargando".
   if (state.queryString !== queryString) {
+    const requestedPage = Number(params.page ?? 1);
+
     return {
+      accumulatedProducts: requestedPage > 1 ? state.accumulatedProducts : [],
       products: [],
       pagination: null,
       error: null,

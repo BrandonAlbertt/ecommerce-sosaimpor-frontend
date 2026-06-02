@@ -12,8 +12,10 @@ import { cn } from "@/lib/utils";
 
 // LIMITE DE SUGERENCIAS VISIBLES EN EL DESPLEGABLE.
 const visibleSuggestionLimit = 4;
+const minimumSearchLength = 3;
 
 export function ProductSearch({ 
+  inputId,
   model, 
   variant = "desktop" 
 }: ProductSearchProps) {
@@ -26,7 +28,7 @@ export function ProductSearch({
     (model.suggestionsPagination?.total ?? 0) > suggestions.length ||
     Boolean(model.suggestionsPagination?.hasNextPage);
   // ABRE SUGERENCIAS SOLO CUANDO HAY TEXTO.
-  const showSuggestions = cleanSearch.length > 0;
+  const showSuggestions = cleanSearch.length >= minimumSearchLength;
   // CAMBIA TAMANO Y TEXTO SEGUN LA VISTA.
   const isMobile = variant === "mobile";
 
@@ -34,7 +36,7 @@ export function ProductSearch({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (cleanSearch) {
+    if (cleanSearch.length >= minimumSearchLength) {
       model.onSubmit();
     }
   }
@@ -60,6 +62,7 @@ export function ProductSearch({
           aria-label="Buscar repuestos"
           autoComplete="off"
           className="h-9 min-w-0 border-0 bg-transparent px-0 text-sm shadow-none focus:border-0 focus:ring-0 dark:bg-transparent"
+          id={inputId}
           onChange={(event) => model.onValueChange(event.target.value)}
           placeholder={
             isMobile
@@ -75,7 +78,7 @@ export function ProductSearch({
             "flex shrink-0 items-center justify-center rounded-lg bg-red-600 font-black text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-zinc-300 dark:disabled:bg-zinc-700",
             isMobile ? "h-8 w-8" : "h-9 px-3 text-xs uppercase",
           )}
-          disabled={!cleanSearch}
+          disabled={cleanSearch.length < minimumSearchLength}
           type="submit"
         >
           {isMobile ? <Search size={16} suppressHydrationWarning /> : "Buscar"}

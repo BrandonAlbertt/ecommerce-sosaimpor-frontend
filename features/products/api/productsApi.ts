@@ -12,8 +12,10 @@
 // Cliente base que sabe hablar con el backend.
 import { axiosClient } from "@/lib/axiosClient";
 
+import { getCachedRequest, productCacheTimes } from "../cache/productRequestCache";
 // Tipos que describen los datos que esta ruta envia y recibe.
 import type {
+  ProductDetailResponse,
   ProductFilterOptionsResponse,
   ProductListParams,
   ProductListResponse,
@@ -41,6 +43,26 @@ import type {
 // GET /api/productos?categoria_id=1&marca=Toyota&search=faro&page=1&limit=12
 const productsPath = "/api/productos";
 
+const productCacheParamOrder: (keyof ProductListParams)[] = [
+  "search",
+  "page",
+  "limit",
+  "categoria_id",
+  "marca",
+  "modelo",
+  "tipo_producto",
+  "condicion",
+  "precio_min",
+  "precio_max",
+  "anio",
+  "anio_min",
+  "anio_max",
+  "orden_precio",
+  "disponibilidad",
+  "stock",
+  "destacado",
+];
+
 // >>> FUNCION IMPORTANTE: CONVIERTE FILTROS EN TEXTO DE URL <<<
 // AQUI SE AGREGA page y limit para paginar.
 // AQUI SE AGREGA search para la barra de busqueda.
@@ -54,7 +76,9 @@ const productsPath = "/api/productos";
 export function createProductsQueryString(params: ProductListParams = {}) {
   const query = new URLSearchParams();
 
-  Object.entries(params).forEach(([key, value]) => {
+  productCacheParamOrder.forEach((key) => {
+    const value = params[key];
+
     if (value === undefined || value === null || value === "") {
       return;
     }
@@ -103,17 +127,44 @@ export function getProductsByQueryString(queryString: string, signal?: AbortSign
   // Si hay filtros, se agregan despues de ?.
   // Si no hay filtros, se consulta /api/productos directamente.
   const path = queryString ? `${productsPath}?${queryString}` : productsPath;
+  const params = new URLSearchParams(queryString);
+  const isSuggestionRequest = Boolean(params.get("search")) && params.get("limit") === "4";
+  const isRelatedProductsRequest = Boolean(params.get("categoria_id")) && params.get("limit") === "5";
+  const ttl = isSuggestionRequest
+    ? productCacheTimes.suggestions
+    : isRelatedProductsRequest
+      ? productCacheTimes.relatedProducts
+      : productCacheTimes.productList;
 
-  return axiosClient.get<ProductListResponse>(path, {
+  return getCachedRequest(
+    `products:list:${queryString || "all"}`,
+    ttl,
+    () => axiosClient.get<ProductListResponse>(path),
     signal,
-  });
+  );
+}
+
+// >>> FUNCION IMPORTANTE: PIDE UN PRODUCTO POR SLUG <<<
+// La pagina /productos/[slug] usa esta ruta para cargar el detalle real.
+export function getProductBySlug(slug: string, signal?: AbortSignal) {
+  const cleanSlug = slug.trim();
+
+  return getCachedRequest(
+    `products:detail:${cleanSlug}`,
+    productCacheTimes.detail,
+    () => axiosClient.get<ProductDetailResponse>(`${productsPath}/${encodeURIComponent(cleanSlug)}`),
+    signal,
+  );
 }
 
 // >>> FUNCION IMPORTANTE: PIDE OPCIONES PARA LOS FILTROS <<<
 // Esta ruta trae categorias, marcas, modelos, anios, precios y disponibilidad.
 // Sirve para llenar select, checkbox o rangos del formulario de filtros.
 export function getProductFilterOptions(signal?: AbortSignal) {
-  return axiosClient.get<ProductFilterOptionsResponse>(`${productsPath}/filtros-opciones`, {
+  return getCachedRequest(
+    "products:filter-options",
+    productCacheTimes.filterOptions,
+    () => axiosClient.get<ProductFilterOptionsResponse>(`${productsPath}/filtros-opciones`),
     signal,
-  });
+  );
 }

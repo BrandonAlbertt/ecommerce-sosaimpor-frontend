@@ -20,17 +20,61 @@ export type Product = {
   year: string;
   price: number;
   image: string | null;
+  images: ProductImage[];
   availability: "Disponible" | "Proximamente";
   condition: ProductCondition;
 };
 
 export type CategoryItem = {
+  id?: string;
+  slug?: string;
   name: string;
+  image?: string | null;
   color: string;
+  colorHex?: string | null;
+  textColorHex?: string | null;
+};
+
+export type ProductImage = {
+  id: string;
+  url: string;
+  principal: boolean;
+  order: number;
+};
+
+export type ProductSpecification = {
+  id: string;
+  name: string;
+  value: string;
+};
+
+export type ProductDetail = Product & {
+  brand: string | null;
+  code: string | null;
+  featured: boolean;
+  model: string | null;
+  productType: string | null;
+  rawDescription: string | null;
+  specifications: ProductSpecification[];
+  stock: number;
+};
+
+export type ProductApiImage = {
+  id: number;
+  imagen_url: string;
+  principal: boolean;
+  orden: number;
+};
+
+export type ProductApiSpecification = {
+  id: number;
+  nombre: string;
+  valor: string;
 };
 
 // Valores que entiende el backend para filtrar disponibilidad.
 export type ProductAvailabilityFilter = "disponible" | "proximamente";
+export type ProductSortOrder = "precio_asc" | "precio_desc";
 
 // >>> TIPO IMPORTANTE: PRODUCTO QUE LLEGA DE LA API <<<
 // Estos nombres vienen del backend y de PostgreSQL.
@@ -55,6 +99,8 @@ export type ProductApiItem = {
   color_hex: string | null;
   color_texto_hex: string | null;
   imagen_principal: string | null;
+  imagenes?: ProductApiImage[];
+  especificaciones?: ProductApiSpecification[];
 };
 
 // >>> TIPO IMPORTANTE: FILTROS QUE PUEDE ENVIAR EL FRONTEND <<<
@@ -74,6 +120,7 @@ export type ProductListParams = {
   anio_max?: number;
   precio_min?: number;
   precio_max?: number;
+  orden_precio?: ProductSortOrder;
   disponibilidad?: ProductAvailabilityFilter;
   stock?: number;
   destacado?: boolean;
@@ -110,6 +157,13 @@ export type ProductListResponse = {
   ok: true;
   data: ProductApiItem[];
   pagination: ProductPagination;
+};
+
+// Respuesta de GET /api/productos/:slug.
+export type ProductDetailResponse = {
+  ok: true;
+  data: ProductApiItem;
+  pagination: null;
 };
 
 // Forma de una categoria dentro de las opciones para filtros.

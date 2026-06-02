@@ -22,12 +22,12 @@ export function ThemeToggle() {
     return (
       <Button
         aria-label="Cambiar tema"
-        className="h-10 w-10 px-0"
+        className="h-12 w-12 px-0"
         type="button"
         variant="secondary"
         disabled
       >
-        <Sun className="h-5 w-5" suppressHydrationWarning />
+        <Sun style={{ height: 32, width: 32 }} strokeWidth={2.8} suppressHydrationWarning />
       </Button>
     );
   }
@@ -37,15 +37,15 @@ export function ThemeToggle() {
   return (
     <Button
       aria-label="Cambiar tema"
-      className="h-10 w-10 shrink-0 px-0 transition-colors duration-300"
+      className="h-12 w-12 shrink-0 px-0 transition-colors duration-300"
       type="button"
       variant="secondary"
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
       {isDark ? (
-        <Sun className="h-5 w-5 transition-transform duration-300" suppressHydrationWarning />
+        <Sun style={{ height: 32, width: 32 }} strokeWidth={2.8} suppressHydrationWarning />
       ) : (
-        <Moon className="h-5 w-5 transition-transform duration-300" suppressHydrationWarning />
+        <Moon style={{ height: 32, width: 32 }} strokeWidth={2.8} suppressHydrationWarning />
       )}
       <span className="sr-only">Cambiar tema</span>
     </Button>

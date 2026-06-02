@@ -26,8 +26,13 @@ type GetOptions = {
   signal?: AbortSignal;
 };
 
+// Opciones que puede recibir una peticion POST.
+type PostOptions = {
+  signal?: AbortSignal;
+};
+
 // URL usada en desarrollo cuando no existe NEXT_PUBLIC_API_URL.
-// Con el backend actual apunta al puerto documentado por la API.
+// En produccion NEXT_PUBLIC_API_URL es obligatoria y debe apuntar al backend real.
 const defaultApiUrl = "http://localhost:3003";
 
 // >>> FUNCION IMPORTANTE: LIMPIA LA URL BASE <<<
@@ -35,6 +40,37 @@ const defaultApiUrl = "http://localhost:3003";
 // Ejemplo: http://localhost:3003/ + /api/productos
 function trimTrailingSlash(value: string) {
   return value.replace(/\/+$/, "");
+}
+
+function isLocalApiUrl(value: string) {
+  try {
+    const url = new URL(value);
+
+    return url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
+}
+
+function resolveApiBaseUrl() {
+  const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+
+  // Variables publicas necesarias para deploy:
+  // NEXT_PUBLIC_API_URL es obligatoria en produccion. Si falta, el navegador
+  // intentaria usar localhost y la tienda no podria hablar con el backend real.
+  if (!configuredApiUrl) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Falta configurar NEXT_PUBLIC_API_URL para produccion.");
+    }
+
+    return defaultApiUrl;
+  }
+
+  if (process.env.NODE_ENV === "production" && isLocalApiUrl(configuredApiUrl)) {
+    throw new Error("NEXT_PUBLIC_API_URL no puede apuntar a localhost en produccion.");
+  }
+
+  return configuredApiUrl;
 }
 
 // >>> FUNCION IMPORTANTE: AGREGA FILTROS A LA URL <<<
@@ -80,11 +116,36 @@ async function get<T>(path: string, options: GetOptions = {}) {
   return (await response.json()) as T;
 }
 
+// >>> FUNCION IMPORTANTE: HACE LA PETICION POST <<<
+// Sirve para crear datos en el backend enviando un body JSON.
+async function post<TResponse, TBody>(path: string, body: TBody, options: PostOptions = {}) {
+  const url = new URL(path, `${axiosClient.baseURL}/`);
+
+  const response = await fetch(url, {
+    body: JSON.stringify(body),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    signal: options.signal,
+  });
+
+  if (!response.ok) {
+    const errorBody = (await response.json().catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(errorBody?.message ?? `La API respondio con estado ${response.status}.`);
+  }
+
+  return (await response.json()) as TResponse;
+}
+
 // >>> OBJETO IMPORTANTE: CLIENTE COMPARTIDO <<<
 // productsApi.ts usa axiosClient.get(...) para consultar rutas del backend.
 // Mantiene el nombre existente del proyecto sin agregar Axios como dependencia.
 export const axiosClient = {
-  // NEXT_PUBLIC_API_URL debe apuntar al backend desplegado en produccion.
-  baseURL: trimTrailingSlash(process.env.NEXT_PUBLIC_API_URL ?? defaultApiUrl),
+  // NEXT_PUBLIC_STORE_ADDRESS, NEXT_PUBLIC_STORE_MAP_URL y
+  // NEXT_PUBLIC_STORE_MAP_EMBED_URL personalizan la informacion de ubicacion.
+  baseURL: trimTrailingSlash(resolveApiBaseUrl()),
   get,
+  post,
 };
