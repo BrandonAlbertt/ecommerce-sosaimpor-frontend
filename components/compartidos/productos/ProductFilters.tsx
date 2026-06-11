@@ -274,7 +274,7 @@ export function ProductFilters({
         <FilterSelect
           disabled={disabled}
           emptyLabel="Todas"
-          label="Categoria"
+          label="Categoría"
           loading={isLoading}
           onChange={updateComboFilter("categoria_id")}
           options={(options?.categorias ?? []).map((category) => ({
@@ -324,12 +324,12 @@ export function ProductFilters({
         />
 
         <div>
-          <p className="text-xs font-bold text-zinc-800 dark:text-zinc-300">Anio</p>
+          <p className="text-xs font-bold text-zinc-800 dark:text-zinc-300">Año</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
-            {/* ANIO MINIMO: EL USUARIO SOLO SELECCIONA ANIOS DISPONIBLES. */}
+            {/* AÑO MÍNIMO: EL USUARIO SOLO SELECCIONA AÑOS DISPONIBLES. */}
             <FilterSelect
               disabled={disabled}
-              emptyLabel="Minimo"
+              emptyLabel="Mínimo"
               label=""
               loading={isLoading}
               onChange={(value) => {
@@ -351,10 +351,10 @@ export function ProductFilters({
               value={draftFilters.anio_min}
             />
 
-            {/* ANIO MAXIMO: SE ACTIVA SOLO DESPUES DE ELEGIR MINIMO Y MUESTRA SUPERIORES. */}
+            {/* AÑO MÁXIMO: SE ACTIVA SOLO DESPUÉS DE ELEGIR MÍNIMO Y MUESTRA SUPERIORES. */}
             <FilterSelect
               disabled={disabled || !draftFilters.anio_min}
-              emptyLabel="Maximo"
+              emptyLabel="Máximo"
               label=""
               loading={isLoading}
               onChange={updateComboFilter("anio_max")}
@@ -369,7 +369,7 @@ export function ProductFilters({
 
         <fieldset className="space-y-1">
           <legend className="text-xs font-bold text-zinc-800 dark:text-zinc-300">
-            Condicion
+            Condición
           </legend>
 
           {(options?.condiciones ?? []).map((condition) => (

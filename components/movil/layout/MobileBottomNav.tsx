@@ -23,7 +23,7 @@ export function MobileBottomNav({ onSearchClick }: MobileBottomNavProps) {
     { href: "/", label: "Inicio", icon: Home, type: "link" },
     { label: "Buscar", icon: Search, type: "button" },
     { href: whatsappUrl, label: "WhatsApp", icon: MessageCircle, type: "link" },
-    { label: "Ubicacion", icon: MapPin, type: "location" },
+    { label: "Ubicación", icon: MapPin, type: "location" },
   ];
   const itemClass =
     "relative flex min-h-12 flex-col items-center justify-center gap-1 rounded-2xl text-[10px] font-bold text-zinc-600 transition-colors hover:bg-zinc-100 first:text-red-600 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:first:text-red-500";

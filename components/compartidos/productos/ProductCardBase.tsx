@@ -82,7 +82,7 @@ export function ProductCardBase({ product }: ProductCardBaseProps) {
           {product.name}
         </h3>
         <p className="text-xs text-zinc-500 dark:text-zinc-400">{product.description}</p>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">Anio: {product.year}</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">Año: {product.year}</p>
         <p className="text-base font-black text-zinc-950 dark:text-zinc-100">S/ {product.price.toLocaleString("es-PE")}.00</p>
         <div className="space-y-1 text-[11px] font-bold uppercase">
           <p className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">

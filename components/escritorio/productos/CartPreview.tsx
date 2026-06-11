@@ -54,7 +54,7 @@ export function CartPreview() {
 
       <div className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600 transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
         <p className="font-black text-zinc-900 dark:text-zinc-100">Compra online y recoge en taller</p>
-        <p>Tu reserva estara lista para recojo en el taller mas cercano.</p>
+        <p>Tu reserva estará lista para recojo en el taller más cercano.</p>
       </div>
 
       <Button className="mt-4 w-full rounded-lg" type="button">

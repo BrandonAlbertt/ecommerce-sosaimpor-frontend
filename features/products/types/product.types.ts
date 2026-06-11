@@ -21,7 +21,7 @@ export type Product = {
   price: number;
   image: string | null;
   images: ProductImage[];
-  availability: "Disponible" | "Proximamente";
+  availability: "Disponible" | "Próximamente";
   condition: ProductCondition;
 };
 

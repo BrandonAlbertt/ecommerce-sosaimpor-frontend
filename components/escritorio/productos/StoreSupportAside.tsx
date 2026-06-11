@@ -28,7 +28,7 @@ export function StoreSupportAside({
   const supportItems = [
     { icon: ShieldCheck, label: "Repuestos originales" },
     { icon: Truck, label: "Importaciones directas" },
-    { icon: Headphones, label: "Atencion personalizada" },
+    { icon: Headphones, label: "Atención personalizada" },
     { icon: PackageCheck, label: "Recojo en taller" },
   ];
   const paymentItems = [
@@ -41,7 +41,7 @@ export function StoreSupportAside({
     <aside className="space-y-4">
       <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900">
         <h2 className="text-center text-base font-bold leading-snug text-zinc-950 dark:text-zinc-100">
-          No encuentras tu repuesto?
+          ¿No encuentras tu repuesto?
         </h2>
         <p className="mt-2 text-center text-sm text-zinc-500 dark:text-zinc-400">
           Te ayudamos a encontrarlo
@@ -88,7 +88,7 @@ export function StoreSupportAside({
       </section>
 
       <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="text-base font-bold text-zinc-950 dark:text-zinc-100">Ubicacion del taller</h2>
+        <h2 className="text-base font-bold text-zinc-950 dark:text-zinc-100">Ubicación del taller</h2>
         <div className="mt-4 flex gap-3">
           <MapPin className="mt-1 shrink-0 text-red-600 dark:text-red-400" size={22} suppressHydrationWarning />
           <div className="text-sm text-zinc-700 dark:text-zinc-300">
@@ -110,10 +110,10 @@ export function StoreSupportAside({
           <Lightbulb size={23} suppressHydrationWarning />
         </span>
         <h2 className="mt-3 text-base font-bold leading-snug text-zinc-950 dark:text-zinc-100">
-          Cuentanos que quieres mejorar
+          Cuéntanos qué quieres mejorar
         </h2>
         <p className="mt-2 text-sm font-semibold text-zinc-600 dark:text-zinc-400">
-          Tu sugerencia se guardara para que el equipo la revise
+          Tu sugerencia se guardará para que el equipo la revise
         </p>
         <button
           className="mt-5 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-zinc-950 px-4 py-3 text-center text-sm font-bold leading-tight text-white shadow-sm transition-colors hover:bg-zinc-800 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400"

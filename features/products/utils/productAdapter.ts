@@ -40,12 +40,12 @@ export function apiProductToProduct(product: ProductApiItem): Product {
     description: [product.marca, product.modelo, product.tipo_producto]
       .filter(Boolean)
       .join(" · "),
-    year: product.anio?.toString() ?? "Sin anio",
+    year: product.anio?.toString() ?? "Sin año",
     price: Number(product.precio),
     image: product.imagen_principal,
     // Los listados solo usan imagen_principal. La galeria completa se arma solo en el detalle.
     images: [],
-    availability: product.proximamente ? "Proximamente" : "Disponible",
+    availability: product.proximamente ? "Próximamente" : "Disponible",
     condition: formatProductCondition(product.condicion),
   };
 }

@@ -64,10 +64,10 @@ export function MobileProductDetail({
     specification.name.toLowerCase() === "garantia"
   ))?.value ?? "7 dias por falla";
   const productFacts = [
-    { icon: ShieldCheck, title: "Condicion", value: product.condition },
+    { icon: ShieldCheck, title: "Condición", value: product.condition },
     { icon: PackageCheck, title: "Disponibilidad", value: product.stock > 0 ? "Disponible para recojo" : product.availability },
     { icon: MapPin, title: "Recojo", value: "En taller" },
-    { icon: ShieldCheck, title: "Garantia", value: warranty },
+    { icon: ShieldCheck, title: "Garantía", value: warranty },
     { icon: Tag, title: "Tipo", value: product.productType ?? product.category },
   ];
 
@@ -145,7 +145,7 @@ export function MobileProductDetail({
           </p>
           <div className="mt-3 flex flex-wrap gap-2 text-xs font-black">
             <span className="rounded-lg bg-zinc-100 px-3 py-2 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-              Codigo: {product.code ?? product.slug.toUpperCase()}
+              Código: {product.code ?? product.slug.toUpperCase()}
             </span>
             <span className="rounded-lg bg-emerald-50 px-3 py-2 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
               {product.availability}
@@ -211,10 +211,10 @@ export function MobileProductDetail({
           {(product.specifications.length > 0
             ? product.specifications.map((specification) => [specification.name, specification.value])
             : [
-                ["Categoria", product.category],
-                ["Anio compatible", product.year],
-                ["Codigo de producto", product.code ?? product.slug.toUpperCase()],
-                ["Condicion", product.condition],
+                ["Categoría", product.category],
+                ["Año compatible", product.year],
+                ["Código de producto", product.code ?? product.slug.toUpperCase()],
+                ["Condición", product.condition],
                 ["Disponibilidad", product.availability],
                 ["Recojo", "En taller"],
               ]
@@ -231,8 +231,8 @@ export function MobileProductDetail({
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400 text-zinc-950 shadow-sm dark:bg-amber-500">
           <Lightbulb size={23} suppressHydrationWarning />
         </span>
-        <h2 className="mt-3 text-lg font-black text-zinc-950 dark:text-zinc-100">Cuentanos que quieres mejorar</h2>
-        <p className="mt-1 text-sm font-semibold text-zinc-600 dark:text-zinc-400">Tu sugerencia se guardara para que el equipo la revise</p>
+        <h2 className="mt-3 text-lg font-black text-zinc-950 dark:text-zinc-100">Cuéntanos qué quieres mejorar</h2>
+        <p className="mt-1 text-sm font-semibold text-zinc-600 dark:text-zinc-400">Tu sugerencia se guardará para que el equipo la revise</p>
         <button
           className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-zinc-950 px-4 py-3 text-center text-sm font-black leading-tight text-white shadow-sm transition-colors hover:bg-zinc-800 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400"
           onClick={onSuggestionClick}

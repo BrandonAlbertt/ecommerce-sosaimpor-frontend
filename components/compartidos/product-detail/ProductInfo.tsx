@@ -26,12 +26,12 @@ export function ProductInfo({
   const warranty = product.specifications.find((specification) => (
     specification.name.toLowerCase() === "garantia" ||
     specification.name.toLowerCase() === "garantía"
-  ))?.value ?? "7 dias por falla";
+  ))?.value ?? "7 días por falla";
   const productFacts = [
-    { icon: ShieldCheck, title: "Condicion", value: product.condition },
+    { icon: ShieldCheck, title: "Condición", value: product.condition },
     { icon: PackageCheck, title: "Disponibilidad", value: product.stock > 0 ? "Disponible para recojo" : product.availability },
     { icon: MapPin, title: "Recojo", value: "En taller" },
-    { icon: ShieldCheck, title: "Garantia", value: warranty },
+    { icon: ShieldCheck, title: "Garantía", value: warranty },
     { icon: Tag, title: "Tipo de producto", value: product.productType ?? product.category },
   ];
 
@@ -49,7 +49,7 @@ export function ProductInfo({
 
       <div className="mt-5 flex flex-wrap gap-2 text-sm font-bold">
         <span className="rounded-xl bg-zinc-100 px-4 py-2 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-          Codigo: {product.code ?? product.slug.toUpperCase()}
+          Código: {product.code ?? product.slug.toUpperCase()}
         </span>
         <span className="rounded-xl bg-emerald-50 px-4 py-2 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
           {product.availability}

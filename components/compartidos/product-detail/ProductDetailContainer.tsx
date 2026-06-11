@@ -74,10 +74,10 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
     const message = [
       "Hola, quiero consultar por este producto:",
       `Producto: ${product.name}`,
-      `Codigo: ${product.code ?? product.slug.toUpperCase()}`,
+      `Código: ${product.code ?? product.slug.toUpperCase()}`,
       `Precio: S/ ${product.price.toLocaleString("es-PE")}.00`,
       currentProductUrl ? `Link: ${currentProductUrl}` : null,
-      "Consulta: Quisiera mas informacion.",
+      "Consulta: Quisiera más información.",
     ].filter(Boolean).join("\n");
 
     return `https://wa.me/${whatsappPhone}?${new URLSearchParams({ text: message }).toString()}`;
@@ -213,7 +213,7 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
               <nav className="col-span-3 flex min-w-0 items-center gap-2 text-sm font-semibold text-zinc-500 dark:text-zinc-400">
                 <Link href="/">Inicio</Link>
                 <span>/</span>
-                <Link href="/productos">Categorias</Link>
+                <Link href="/productos">Categorías</Link>
                 <span>/</span>
                 <span className="truncate">{product.category}</span>
                 <span>/</span>
@@ -240,10 +240,10 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
                   {(product.specifications.length > 0
                     ? product.specifications.map((specification) => [specification.name, specification.value])
                     : [
-                        ["Categoria", product.category],
-                        ["Anio compatible", product.year],
-                        ["Codigo de producto", product.code ?? product.slug.toUpperCase()],
-                        ["Condicion", product.condition],
+                        ["Categoría", product.category],
+                        ["Año compatible", product.year],
+                        ["Código de producto", product.code ?? product.slug.toUpperCase()],
+                        ["Condición", product.condition],
                         ["Disponibilidad", product.availability],
                         ["Recojo", "En taller"],
                       ]
@@ -296,10 +296,10 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
                     {(product.specifications.length > 0
                       ? product.specifications.map((specification) => [specification.name, specification.value])
                       : [
-                          ["Categoria", product.category],
-                          ["Anio compatible", product.year],
-                          ["Codigo de producto", product.code ?? product.slug.toUpperCase()],
-                          ["Condicion", product.condition],
+                          ["Categoría", product.category],
+                          ["Año compatible", product.year],
+                          ["Código de producto", product.code ?? product.slug.toUpperCase()],
+                          ["Condición", product.condition],
                           ["Disponibilidad", product.availability],
                           ["Recojo", "En taller"],
                         ]

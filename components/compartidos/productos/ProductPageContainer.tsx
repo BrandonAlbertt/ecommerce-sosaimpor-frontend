@@ -35,8 +35,8 @@ const defaultHomePageContent: HomeContentModel = {
   banner: {
     imageLabel: "CATALOGO VIP",
     primaryMessage: "Entrega express",
-    secondaryMessage: "Garantia extendida",
-    tertiaryMessage: "Atencion personalizada",
+    secondaryMessage: "Garantía extendida",
+    tertiaryMessage: "Atención personalizada",
     subtitle: "Soluciones premium para talleres y conductores exigentes",
     title: "AUTOPARTES SELECTAS DEL PACIFICO",
   },

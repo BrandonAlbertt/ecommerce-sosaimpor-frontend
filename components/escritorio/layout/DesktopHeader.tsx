@@ -34,7 +34,7 @@ export type DesktopHeaderContent = {
 
 const defaultHeaderContent: DesktopHeaderContent = {
   helpLabel: "Necesitas ayuda?",
-  locationLabel: "Ubicacion",
+  locationLabel: "Ubicación",
   locationSubLabel: "Ver en mapa",
   phoneLabel: "+51 924 516 682",
   primaryMessage: "Compra online y recoge en taller",
@@ -43,7 +43,7 @@ const defaultHeaderContent: DesktopHeaderContent = {
   shippingBadge: "SIN ENVIOS",
   secondaryMessage: "Solo recojo en tienda",
   whatsappLabel: "WhatsApp",
-  whatsappSubLabel: "Atencion rapida",
+  whatsappSubLabel: "Atención rápida",
   whatsappUrl: "https://wa.me/51924516682",
 };
 

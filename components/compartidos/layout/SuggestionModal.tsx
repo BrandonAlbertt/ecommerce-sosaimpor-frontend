@@ -93,7 +93,7 @@ export function SuggestionModal({
                 Sugerencia
               </p>
               <h2 className="mt-1 text-xl font-black leading-tight text-zinc-950 dark:text-zinc-100">
-                Cuentanos que quieres mejorar
+                Cuéntanos qué quieres mejorar
               </h2>
             </div>
           </div>
@@ -128,7 +128,7 @@ export function SuggestionModal({
 
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
                 <span>
-                  Minimo {commentValidationRules.minWords} palabras y {commentValidationRules.minCharacters} caracteres.
+                  Mínimo {commentValidationRules.minWords} palabras y {commentValidationRules.minCharacters} caracteres.
                 </span>
                 <span className={isWithinWordLimit ? "" : "text-red-600 dark:text-red-400"}>
                   {wordCount}/{commentValidationRules.maxWords} palabras

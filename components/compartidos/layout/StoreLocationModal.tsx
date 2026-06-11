@@ -59,7 +59,7 @@ export function StoreLocationModal({
       role="dialog"
     >
       <button
-        aria-label="Cerrar ubicacion"
+        aria-label="Cerrar ubicación"
         className="absolute inset-0 h-full w-full cursor-default"
         onClick={onClose}
         type="button"
@@ -73,7 +73,7 @@ export function StoreLocationModal({
             </span>
             <div className="min-w-0">
               <p className="text-xs font-black uppercase text-red-600 dark:text-red-400">
-                Ubicacion del taller
+                Ubicación del taller
               </p>
               <h2 className="mt-1 text-xl font-black leading-tight text-zinc-950 dark:text-zinc-100">
                 SOSA IMPORT
@@ -81,7 +81,7 @@ export function StoreLocationModal({
             </div>
           </div>
           <button
-            aria-label="Cerrar modal de ubicacion"
+            aria-label="Cerrar modal de ubicación"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 text-zinc-700 transition-colors hover:border-red-300 hover:text-red-600 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-red-900 dark:hover:text-red-400"
             onClick={onClose}
             type="button"
@@ -93,7 +93,7 @@ export function StoreLocationModal({
         <div className="max-h-[calc(88vh-5.25rem)] space-y-4 overflow-y-auto p-5">
           <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950">
             <p className="text-xs font-black uppercase text-zinc-500 dark:text-zinc-400">
-              Direccion
+              Dirección
             </p>
             <p className="mt-2 text-base font-bold leading-relaxed text-zinc-950 dark:text-zinc-100">
               {displayLocationAddress}
