@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // COMPONENTES COMPARTIDOS Y DE LAYOUT
@@ -13,6 +14,7 @@ import { useComment } from "@/features/comments/hooks/useComment";
 import { useHome } from "@/features/home/hooks/useHome";
 import type { HomeContentModel } from "@/features/home/types/home.types";
 import { catalogCategories } from "@/features/products/data/catalogData";
+import { useCategoryMetrics } from "@/features/products/hooks/useCategoryMetrics";
 import { useFeaturedCategories } from "@/features/products/hooks/useFeaturedCategories";
 import { useProductFilterOptions } from "@/features/products/hooks/useProductFilterOptions";
 import { useProductFilters } from "@/features/products/hooks/useProductFilters";
@@ -31,41 +33,41 @@ import { ProductGrid } from "./ProductGrid";
 
 const defaultHomePageContent: HomeContentModel = {
   banner: {
-    imageLabel: "IMAGEN MOTOR",
-    primaryMessage: "Compra online y recoge en taller",
-    secondaryMessage: "Con envios",
-    tertiaryMessage: "Recojo en tienda",
-    subtitle: "Piezas seleccionadas y verificadas para tu vehiculo",
-    title: "REPUESTOS USADOS IMPORTADOS",
+    imageLabel: "CATALOGO VIP",
+    primaryMessage: "Entrega express",
+    secondaryMessage: "Garantia extendida",
+    tertiaryMessage: "Atencion personalizada",
+    subtitle: "Soluciones premium para talleres y conductores exigentes",
+    title: "AUTOPARTES SELECTAS DEL PACIFICO",
   },
   header: {
-    helpLabel: "Necesitas ayuda?",
-    locationLabel: "Ubicacion",
-    locationSubLabel: "Ver en mapa",
-    phoneLabel: "+51 924 516 682",
-    primaryMessage: "Compra online y recoge en taller",
-    scheduleFriday: "Lun - Vie: 8:00 am - 6:00 pm",
-    scheduleSaturday: "Sab: 8:00 am - 1:00 pm",
-    shippingBadge: "con envios",
-    secondaryMessage: "Solo recojo en tienda",
-    whatsappLabel: "WhatsApp",
-    whatsappSubLabel: "Atencion rapida",
-    whatsappUrl: "https://wa.me/51924516682",
+    helpLabel: "Soporte inmediato",
+    locationLabel: "Sede central",
+    locationSubLabel: "Abrir mapa",
+    phoneLabel: "+51 987 654 321",
+    primaryMessage: "Compra segura y retiro coordinado",
+    scheduleFriday: "Lun - Vie: 9:00 am - 7:00 pm",
+    scheduleSaturday: "Sab: 9:00 am - 2:00 pm",
+    shippingBadge: "envios a nivel nacional",
+    secondaryMessage: "Recojo en tienda o despacho",
+    whatsappLabel: "Escribenos",
+    whatsappSubLabel: "Respuesta prioritaria",
+    whatsappUrl: "https://wa.me/51987654321",
   },
   location: {
-    displayAddress: "Av. Los Proceres 123",
-    displayDistrict: "San Martin de Porres, Lima",
+    displayAddress: "Jr. Comercio 456",
+    displayDistrict: "Santa Anita, Lima",
     modal: storeLocation,
   },
-  sellerWhatsappUrl: "https://wa.me/51924516682",
+  sellerWhatsappUrl: "https://wa.me/51987654321",
 };
 
 // FUNCION HERO: PRESENTA EL TITULO PRINCIPAL Y LOS MENSAJES CLAVE DE LA TIENDA.
 function StoreHero({ content }: { content: HomeContentModel["banner"] }) {
   return (
-    <section className="w-full max-w-full overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900 md:rounded-xl">
-      <div className="grid min-w-0 gap-4 px-4 py-4 md:px-5 md:py-4 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-center xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="min-w-0 max-w-full">
+    <section className="w-full max-w-full overflow-hidden rounded-2xl border border-zinc-200 bg-gradient-to-br from-white via-white to-zinc-50 shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950 md:rounded-xl">
+      <div className="grid min-w-0 gap-5 px-5 py-5 md:px-5 md:py-4 lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)] lg:items-center xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="min-w-0 max-w-full py-1">
           <h1 className="max-w-full whitespace-normal wrap-break-word text-2xl font-black uppercase leading-tight tracking-normal text-zinc-950 transition-colors duration-300 dark:text-zinc-100 sm:text-3xl md:text-2xl xl:text-3xl">
             {content.title}
           </h1>
@@ -78,8 +80,18 @@ function StoreHero({ content }: { content: HomeContentModel["banner"] }) {
             <span className="text-zinc-950 dark:text-zinc-400">{content.tertiaryMessage}</span>
           </div>
         </div>
-        <div className="hidden h-32 items-center justify-center rounded-xl bg-zinc-50 text-sm font-black text-zinc-400 transition-colors duration-300 dark:bg-zinc-800 dark:text-zinc-500 md:flex lg:h-36">
-          {content.imageLabel}
+        <div className="relative hidden h-36 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100 shadow-[0_14px_28px_rgba(15,23,42,0.10)] ring-1 ring-white/70 transition-colors duration-300 dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_34px_rgba(0,0,0,0.45)] dark:ring-red-500/10 md:block lg:h-40">
+          <Image
+            alt="Banner de repuestos usados importados"
+            className="object-cover object-center brightness-[0.98] contrast-[1.04] saturate-[1.04] dark:brightness-[0.88] dark:contrast-[1.08]"
+            fill
+            loading="eager"
+            sizes="(min-width: 1280px) 380px, (min-width: 1024px) 360px, 0px"
+            src="/banner1.webp"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-zinc-950/20 via-transparent to-zinc-950/10 dark:from-zinc-950/45 dark:via-zinc-950/5 dark:to-red-950/30" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white/10 via-transparent to-white/15 dark:from-zinc-950/35 dark:to-white/5" />
+          <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/25 dark:ring-white/10" />
         </div>
       </div>
     </section>
@@ -131,6 +143,7 @@ export function ProductPageContainer({
     initialFilters: initialSearch ? { search: initialSearch } : {},
   });
   const { applyFilters, filters } = productFilters;
+  useCategoryMetrics(filters.categoria_id);
   // BUSQUEDA: AL ENVIAR TEXTO, LO APLICA AL MISMO CATALOGO QUE USAN LOS FILTROS.
   const handleSearchSubmit = useCallback(
     (search: string) => {
@@ -270,6 +283,8 @@ export function ProductPageContainer({
           productSearch={productSearch} 
       />
       <StoreLocationModal
+        displayAddress={homePageContent.location.displayAddress}
+        displayDistrict={homePageContent.location.displayDistrict}
         location={homePageContent.location.modal}
         onClose={closeLocation}
         open={locationOpen}

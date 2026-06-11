@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { ChevronDown } from "lucide-react";
 
@@ -61,8 +61,28 @@ function FilterSelect({
   value,
 }: FilterSelectProps) {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLLabelElement | null>(null);
   const selectedOption = options.find((option) => String(option.value) === String(value));
   const displayLabel = selectedOption?.label ?? (loading ? "Cargando..." : emptyLabel);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    function handlePointerDown(event: PointerEvent) {
+      if (
+        event.target instanceof Node &&
+        !containerRef.current?.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [open]);
 
   function selectValue(nextValue: number | string | undefined) {
     onChange(nextValue);
@@ -70,7 +90,10 @@ function FilterSelect({
   }
 
   return (
-    <label className="relative block text-xs font-bold text-zinc-800 dark:text-zinc-300">
+    <label
+      className="relative block text-xs font-bold text-zinc-800 dark:text-zinc-300"
+      ref={containerRef}
+    >
       {label}
       <button
         className={`${fieldClass} flex items-center justify-between gap-2 text-left disabled:cursor-not-allowed disabled:opacity-60`}

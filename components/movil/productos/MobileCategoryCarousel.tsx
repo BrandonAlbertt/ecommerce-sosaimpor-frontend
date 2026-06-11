@@ -14,7 +14,7 @@ export function MobileCategoryCarousel({
 }: MobileCategoryCarouselProps) {
   return (
     // Seccion movil: carrusel horizontal tactil para navegar categorias.
-    <div className="flex max-w-full snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-0 pb-2 md:hidden">
+    <div className="featured-category-scroll flex max-w-full snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-0 pb-2 md:hidden">
       {categories.map((category) => (
         <button
           key={category.id ?? category.slug ?? category.name}

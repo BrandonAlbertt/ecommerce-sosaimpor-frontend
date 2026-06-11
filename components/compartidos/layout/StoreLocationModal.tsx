@@ -6,12 +6,16 @@ import { ExternalLink, MapPin, X } from "lucide-react";
 import type { StoreLocation } from "@/features/store/storeLocation";
 
 type StoreLocationModalProps = {
+  displayAddress?: string;
+  displayDistrict?: string;
   location: StoreLocation;
   onClose: () => void;
   open: boolean;
 };
 
 export function StoreLocationModal({
+  displayAddress,
+  displayDistrict,
   location,
   onClose,
   open,
@@ -35,6 +39,18 @@ export function StoreLocationModal({
   if (!open) {
     return null;
   }
+
+  const displayLocationParts = [displayAddress, displayDistrict]
+    .map((part) => part?.trim())
+    .filter(Boolean);
+  const displayLocationAddress = displayLocationParts.join(", ") || location.address;
+  const shouldUseDisplayLocation = displayLocationParts.length > 0;
+  const mapEmbedUrl = shouldUseDisplayLocation
+    ? `https://maps.google.com/maps?q=${encodeURIComponent(displayLocationAddress)}&output=embed`
+    : location.mapEmbedUrl;
+  const mapUrl = shouldUseDisplayLocation
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(displayLocationAddress)}`
+    : location.mapUrl;
 
   return (
     <div
@@ -80,7 +96,7 @@ export function StoreLocationModal({
               Direccion
             </p>
             <p className="mt-2 text-base font-bold leading-relaxed text-zinc-950 dark:text-zinc-100">
-              {location.address}
+              {displayLocationAddress}
             </p>
           </div>
 
@@ -89,14 +105,14 @@ export function StoreLocationModal({
               className="h-64 w-full border-0 sm:h-72"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              src={location.mapEmbedUrl}
-              title={`Mapa de ${location.address}`}
+              src={mapEmbedUrl}
+              title={`Mapa de ${displayLocationAddress}`}
             />
           </div>
 
           <a
             className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-red-600 text-sm font-black text-white shadow-sm transition-colors hover:bg-red-700"
-            href={location.mapUrl}
+            href={mapUrl}
             rel="noreferrer"
             target="_blank"
           >

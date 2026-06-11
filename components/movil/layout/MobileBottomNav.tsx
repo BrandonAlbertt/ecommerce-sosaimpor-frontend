@@ -5,16 +5,10 @@ import { useState } from "react";
 import { Home, MapPin, MessageCircle, Search } from "lucide-react";
 
 import { StoreLocationModal } from "@/components/compartidos/layout/StoreLocationModal";
+import { useHome } from "@/features/home/hooks/useHome";
 import { storeLocation } from "@/features/store/storeLocation";
 
 export const mobileSearchInputId = "mobile-product-search";
-
-const items = [
-  { href: "/", label: "Inicio", icon: Home, type: "link" },
-  { label: "Buscar", icon: Search, type: "button" },
-  { href: "https://wa.me/51924516682", label: "WhatsApp", icon: MessageCircle, type: "link" },
-  { label: "Ubicacion", icon: MapPin, type: "location" },
-];
 
 type MobileBottomNavProps = {
   onSearchClick?: () => void;
@@ -22,6 +16,15 @@ type MobileBottomNavProps = {
 
 export function MobileBottomNav({ onSearchClick }: MobileBottomNavProps) {
   const [locationOpen, setLocationOpen] = useState(false);
+  const home = useHome();
+  const homeLocation = home.homeContent?.location;
+  const whatsappUrl = home.homeContent?.sellerWhatsappUrl ?? "https://wa.me/51924516682";
+  const items = [
+    { href: "/", label: "Inicio", icon: Home, type: "link" },
+    { label: "Buscar", icon: Search, type: "button" },
+    { href: whatsappUrl, label: "WhatsApp", icon: MessageCircle, type: "link" },
+    { label: "Ubicacion", icon: MapPin, type: "location" },
+  ];
   const itemClass =
     "relative flex min-h-12 flex-col items-center justify-center gap-1 rounded-2xl text-[10px] font-bold text-zinc-600 transition-colors hover:bg-zinc-100 first:text-red-600 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:first:text-red-500";
 
@@ -92,6 +95,8 @@ export function MobileBottomNav({ onSearchClick }: MobileBottomNavProps) {
         </div>
       </nav>
       <StoreLocationModal
+        displayAddress={homeLocation?.displayAddress}
+        displayDistrict={homeLocation?.displayDistrict}
         location={storeLocation}
         onClose={() => setLocationOpen(false)}
         open={locationOpen}

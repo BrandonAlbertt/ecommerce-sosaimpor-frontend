@@ -17,7 +17,7 @@ export function DesktopCategoryGrid({
   return (
     // Seccion escritorio: muestra hasta 9 categorias; en anchos menores funciona como carrusel.
     <div
-      className={`hidden max-w-full grid-flow-col auto-cols-[104px] gap-3 overflow-x-auto scroll-smooth pb-2 md:grid lg:auto-cols-[calc((100%-4rem)/9)] lg:gap-2 xl:auto-cols-[112px] 2xl:auto-cols-[calc((100%-4rem)/9)] ${
+      className={`featured-category-scroll hidden max-w-full grid-flow-col auto-cols-[104px] gap-3 overflow-x-auto scroll-smooth pb-2 md:grid lg:auto-cols-[calc((100%-4rem)/9)] lg:gap-2 xl:auto-cols-[112px] 2xl:auto-cols-[calc((100%-4rem)/9)] ${
         shouldCenterCategories ? "justify-start 2xl:justify-center" : "justify-start"
       }`}
     >

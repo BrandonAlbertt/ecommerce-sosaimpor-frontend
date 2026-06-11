@@ -26,3 +26,37 @@ body {
 a {
   text-decoration: none;
 }
+
+.featured-category-scroll {
+  scrollbar-color: rgba(239, 68, 68, 0.55) transparent;
+  scrollbar-width: thin;
+}
+
+.featured-category-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.featured-category-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.featured-category-scroll::-webkit-scrollbar-thumb {
+  background: rgba(239, 68, 68, 0.5);
+  border-radius: 999px;
+}
+
+.featured-category-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(220, 38, 38, 0.75);
+}
+
+.dark .featured-category-scroll {
+  scrollbar-color: rgba(248, 113, 113, 0.5) transparent;
+}
+
+.dark .featured-category-scroll::-webkit-scrollbar-thumb {
+  background: rgba(248, 113, 113, 0.45);
+}
+
+.dark .featured-category-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(248, 113, 113, 0.7);
+}

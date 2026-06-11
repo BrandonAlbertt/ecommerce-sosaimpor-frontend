@@ -10,6 +10,7 @@ import { MobileAppChrome } from "@/components/movil/layout/MobileAppChrome";
 import { MobileProductDetail } from "@/components/movil/productos/MobileProductDetail";
 import { useComment } from "@/features/comments/hooks/useComment";
 import { useProductDetail } from "@/features/products/hooks/useProductDetail";
+import { useProductMetrics } from "@/features/products/hooks/useProductMetrics";
 import { useProductRaiz } from "@/features/products/hooks/useProductRaiz";
 import { useProductSearchNavigation } from "@/features/products/hooks/useProductSearchNavigation";
 import { apiProductToProduct, apiProductToProductDetail } from "@/features/products/utils/productAdapter";
@@ -34,6 +35,7 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
   const [suggestionMessage, setSuggestionMessage] = useState("");
   const comment = useComment();
   const detail = useProductDetail(slug);
+  useProductMetrics(detail.product?.id);
   const { productSearch } = useProductSearchNavigation();
   const whatsappPhone = "51924516682";
   const supportWhatsappUrl = `https://wa.me/${whatsappPhone}`;

@@ -9,8 +9,16 @@ const localNetworkDevOrigins = [
 ];
 
 const imageCacheTtl = 7 * 24 * 60 * 60;
-const fallbackImageHostnames = [
-  "images.unsplash.com",
+const fallbackRemoteImagePatterns: RemoteImagePattern[] = [
+  {
+    hostname: "images.unsplash.com",
+    protocol: "https",
+  },
+  {
+    hostname: "res.cloudinary.com",
+    pathname: "/dqt75zrm1/image/upload/**",
+    protocol: "https",
+  },
 ];
 
 function getHostnameFromUrl(value?: string) {
@@ -25,7 +33,7 @@ function getHostnameFromUrl(value?: string) {
   }
 }
 
-function getProductionImageHostnames() {
+function getProductionImagePatterns() {
   // NEXT_PUBLIC_IMAGE_HOSTNAME permite declarar uno o varios hosts de imagenes
   // separados por coma. Si no se configura, se usa el host de NEXT_PUBLIC_API_URL.
   // En produccion evitamos hostname "**" para no optimizar imagenes de cualquier dominio.
@@ -35,18 +43,22 @@ function getProductionImageHostnames() {
     .filter(Boolean) ?? [];
   const apiHostname = getHostnameFromUrl(process.env.NEXT_PUBLIC_API_URL);
 
-  return [...new Set([
-    ...fallbackImageHostnames,
+  const configuredPatterns = [...new Set([
     ...configuredHostnames,
     ...(apiHostname ? [apiHostname] : []),
-  ])];
-}
-
-function getRemoteImagePatterns(): RemoteImagePattern[] {
-  const productionPatterns = getProductionImageHostnames().map((hostname) => ({
+  ])].map((hostname) => ({
     hostname,
     protocol: "https" as const,
   }));
+
+  return [
+    ...fallbackRemoteImagePatterns,
+    ...configuredPatterns,
+  ];
+}
+
+function getRemoteImagePatterns(): RemoteImagePattern[] {
+  const productionPatterns = getProductionImagePatterns();
 
   if (process.env.NODE_ENV === "production") {
     return productionPatterns;
