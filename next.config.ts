@@ -16,7 +16,6 @@ const fallbackRemoteImagePatterns: RemoteImagePattern[] = [
   },
   {
     hostname: "res.cloudinary.com",
-    pathname: "/dqt75zrm1/image/upload/**",
     protocol: "https",
   },
 ];
@@ -82,6 +81,7 @@ function getRemoteImagePatterns(): RemoteImagePattern[] {
 const nextConfig: NextConfig = {
   allowedDevOrigins: localNetworkDevOrigins,
   images: {
+    formats: ["image/avif", "image/webp"],
     minimumCacheTTL: imageCacheTtl,
     remotePatterns: getRemoteImagePatterns(),
   },
