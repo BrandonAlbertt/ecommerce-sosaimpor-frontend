@@ -50,6 +50,7 @@ export function MobileProductDetail({
   product,
   whatsappUrl,
 }: MobileProductDetailProps) {
+  const [detailInfoTab, setDetailInfoTab] = useState<"specifications" | "description">("specifications");
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const images = getProductImages(product);
   const selectedImage = images.find((image) => image.id === selectedImageId);
@@ -206,8 +207,32 @@ export function MobileProductDetail({
       </section>
 
       <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <h2 className="text-lg font-black text-zinc-950 dark:text-zinc-100">Especificaciones</h2>
-        <dl className="mt-3 divide-y divide-zinc-100 text-sm dark:divide-zinc-800">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            className={`rounded-lg px-3 py-2 text-sm font-black transition-colors ${
+              detailInfoTab === "specifications"
+                ? "bg-red-600 text-white"
+                : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            }`}
+            onClick={() => setDetailInfoTab("specifications")}
+            type="button"
+          >
+            Especificaciones
+          </button>
+          <button
+            className={`rounded-lg px-3 py-2 text-sm font-black transition-colors ${
+              detailInfoTab === "description"
+                ? "bg-red-600 text-white"
+                : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            }`}
+            onClick={() => setDetailInfoTab("description")}
+            type="button"
+          >
+            Descripcion
+          </button>
+        </div>
+        {detailInfoTab === "specifications" ? (
+          <dl className="mt-3 divide-y divide-zinc-100 text-sm dark:divide-zinc-800">
           {(product.specifications.length > 0
             ? product.specifications.map((specification) => [specification.name, specification.value])
             : [
@@ -224,7 +249,12 @@ export function MobileProductDetail({
               <dd className="font-semibold text-zinc-900 dark:text-zinc-100">{value}</dd>
             </div>
           ))}
-        </dl>
+          </dl>
+        ) : (
+          <p className="mt-3 whitespace-pre-line rounded-xl border border-zinc-100 bg-white px-3 py-3 text-sm font-medium leading-relaxed text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+            {product.description || "Descripcion no disponible."}
+          </p>
+        )}
       </section>
 
       <section className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-center shadow-sm dark:border-amber-900 dark:bg-amber-950/20">
