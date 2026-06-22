@@ -78,3 +78,4 @@ ecommerce-sosaimpor-frontend/
 ├── providers/            # Proveedores de contexto globales (ej. ThemeProvider).
 └── public/               # Recursos estáticos como el logo (logo.webp), imágenes y SVGs.
 ```
+// redeploy
