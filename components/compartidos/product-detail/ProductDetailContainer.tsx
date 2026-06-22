@@ -9,6 +9,7 @@ import { DesktopHeader } from "@/components/escritorio/layout/DesktopHeader";
 import { MobileAppChrome } from "@/components/movil/layout/MobileAppChrome";
 import { MobileProductDetail } from "@/components/movil/productos/MobileProductDetail";
 import { useComment } from "@/features/comments/hooks/useComment";
+import { useHome } from "@/features/home/hooks/useHome";
 import { useProductDetail } from "@/features/products/hooks/useProductDetail";
 import { useProductMetrics } from "@/features/products/hooks/useProductMetrics";
 import { useProductRaiz } from "@/features/products/hooks/useProductRaiz";
@@ -28,15 +29,18 @@ type ProductDetailContainerProps = {
 
 export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
   const [locationOpen, setLocationOpen] = useState(false);
+  const [detailInfoTab, setDetailInfoTab] = useState<"specifications" | "description">("specifications");
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [suggestionOpen, setSuggestionOpen] = useState(false);
   const [suggestionMessage, setSuggestionMessage] = useState("");
   const comment = useComment();
+  const home = useHome();
   const detail = useProductDetail(slug);
   useProductMetrics(detail.product?.id);
   const { productSearch } = useProductSearchNavigation();
+  const headerContent = home.homeContent?.header;
   const whatsappPhone = "51924516682";
   const supportWhatsappUrl = `https://wa.me/${whatsappPhone}`;
   const openLocation = useCallback(() => setLocationOpen(true), []);
@@ -146,7 +150,11 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
   return (
     <div className="min-h-screen bg-white transition-colors duration-300 dark:bg-zinc-950">
       <MobileAppChrome productSearch={productSearch} />
-      <DesktopHeader onLocationClick={openLocation} productSearch={productSearch} />
+      <DesktopHeader
+        content={headerContent}
+        onLocationClick={openLocation}
+        productSearch={productSearch}
+      />
       <StoreLocationModal
         location={storeLocation}
         onClose={closeLocation}
@@ -205,6 +213,7 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
                 isLoading={relatedProductsState.isLoading}
                 mobileEyebrow="Relacionados"
                 products={relatedProducts}
+                shippingBadge={headerContent?.shippingBadge}
                 showSort={false}
                 summaryLabel="productos relacionados"
               />
@@ -233,10 +242,32 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
               />
 
               <section className="col-span-2 self-start rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900">
-                <h2 className="border-b border-zinc-200 pb-3 text-lg font-black text-zinc-950 dark:border-zinc-800 dark:text-zinc-100">
-                  Especificaciones
-                </h2>
-                <dl className="mt-4 grid gap-3 text-sm lg:grid-cols-2">
+                <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-800">
+                  <button
+                    className={`rounded-lg px-3 py-2 text-sm font-black transition-colors ${
+                      detailInfoTab === "specifications"
+                        ? "bg-red-600 text-white"
+                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    }`}
+                    onClick={() => setDetailInfoTab("specifications")}
+                    type="button"
+                  >
+                    Especificaciones
+                  </button>
+                  <button
+                    className={`rounded-lg px-3 py-2 text-sm font-black transition-colors ${
+                      detailInfoTab === "description"
+                        ? "bg-red-600 text-white"
+                        : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    }`}
+                    onClick={() => setDetailInfoTab("description")}
+                    type="button"
+                  >
+                    Descripcion
+                  </button>
+                </div>
+                {detailInfoTab === "specifications" ? (
+                  <dl className="mt-4 grid gap-3 text-sm lg:grid-cols-2">
                   {(product.specifications.length > 0
                     ? product.specifications.map((specification) => [specification.name, specification.value])
                     : [
@@ -260,7 +291,12 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
                       </dd>
                     </div>
                   ))}
-                </dl>
+                  </dl>
+                ) : (
+                  <p className="mt-4 whitespace-pre-line rounded-xl border border-zinc-100 bg-white px-4 py-3 text-sm font-medium leading-relaxed text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+                    {product.description || "Descripcion no disponible."}
+                  </p>
+                )}
               </section>
 
               <section className="col-span-2">
@@ -273,9 +309,11 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
                   </Link>
                 </div>
                 <ProductGrid
+                  desktopGridClassName="hidden gap-4 md:grid md:grid-cols-2 xl:grid-cols-3"
                   error={relatedProductsState.error}
                   isLoading={relatedProductsState.isLoading}
                   products={relatedProducts}
+                  shippingBadge={headerContent?.shippingBadge}
                   showSort={false}
                   summaryLabel="productos relacionados"
                 />
@@ -291,8 +329,32 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
                   whatsappUrl={whatsappUrl}
                 />
                 <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900">
-                  <h2 className="text-xl font-black text-zinc-950 dark:text-zinc-100">Especificaciones</h2>
-                  <dl className="mt-4 overflow-hidden rounded-xl border border-zinc-100 text-sm dark:border-zinc-800">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      className={`rounded-lg px-3 py-2 text-sm font-black transition-colors ${
+                        detailInfoTab === "specifications"
+                          ? "bg-red-600 text-white"
+                          : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      }`}
+                      onClick={() => setDetailInfoTab("specifications")}
+                      type="button"
+                    >
+                      Especificaciones
+                    </button>
+                    <button
+                      className={`rounded-lg px-3 py-2 text-sm font-black transition-colors ${
+                        detailInfoTab === "description"
+                          ? "bg-red-600 text-white"
+                          : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      }`}
+                      onClick={() => setDetailInfoTab("description")}
+                      type="button"
+                    >
+                      Descripcion
+                    </button>
+                  </div>
+                  {detailInfoTab === "specifications" ? (
+                    <dl className="mt-4 overflow-hidden rounded-xl border border-zinc-100 text-sm dark:border-zinc-800">
                     {(product.specifications.length > 0
                       ? product.specifications.map((specification) => [specification.name, specification.value])
                       : [
@@ -316,7 +378,12 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
                         </dd>
                       </div>
                     ))}
-                  </dl>
+                    </dl>
+                  ) : (
+                    <p className="mt-4 whitespace-pre-line rounded-xl border border-zinc-100 bg-white px-4 py-3 text-sm font-medium leading-relaxed text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+                      {product.description || "Descripcion no disponible."}
+                    </p>
+                  )}
                 </section>
               </div>
               <section className="col-span-2">
@@ -329,9 +396,11 @@ export function ProductDetailContainer({ slug }: ProductDetailContainerProps) {
                   </Link>
                 </div>
                 <ProductGrid
+                  desktopGridClassName="hidden gap-4 md:grid md:grid-cols-2 xl:grid-cols-3"
                   error={relatedProductsState.error}
                   isLoading={relatedProductsState.isLoading}
                   products={relatedProducts}
+                  shippingBadge={headerContent?.shippingBadge}
                   showSort={false}
                   summaryLabel="productos relacionados"
                 />

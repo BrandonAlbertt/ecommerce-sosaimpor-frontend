@@ -7,6 +7,7 @@ import { getCatalogProductImage } from "@/features/products/utils/productImage";
 
 type ProductCardBaseProps = {
   product: Product;
+  shippingBadge?: string;
 };
 
 const badgeColors: Record<string, string> = {
@@ -33,7 +34,10 @@ const badgeColors: Record<string, string> = {
   Vidrios: "bg-blue-600",
 };
 
-export function ProductCardBase({ product }: ProductCardBaseProps) {
+export function ProductCardBase({
+  product,
+  shippingBadge = "envios a nivel nacional",
+}: ProductCardBaseProps) {
   const conditionLabel = product.condition.replace(" importado", "");
 
   return (
@@ -64,7 +68,7 @@ export function ProductCardBase({ product }: ProductCardBaseProps) {
           {product.image ? (
             <Image
               alt={product.name}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain"
               height={144}
               quality={45}
               sizes="(min-width: 1280px) 220px, 180px"
@@ -91,7 +95,7 @@ export function ProductCardBase({ product }: ProductCardBaseProps) {
           </p>
           <p className="flex items-center gap-1 text-red-600 dark:text-red-400">
             <span className="h-1.5 w-1.5 rounded-full bg-current" />
-            Recojo en taller
+            {shippingBadge}
           </p>
           <p className="flex items-center gap-1 text-zinc-600 dark:text-zinc-400">
             <span className="h-1.5 w-1.5 rounded-full bg-current" />

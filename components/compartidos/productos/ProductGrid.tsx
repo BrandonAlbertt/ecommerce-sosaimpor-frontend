@@ -6,6 +6,7 @@ import { DesktopProductGrid } from "@/components/escritorio/productos/DesktopPro
 import { MobileProductGrid } from "@/components/movil/productos/MobileProductGrid";
 
 type ProductGridProps = {
+  desktopGridClassName?: string;
   error?: string | null;
   hasMoreMobileProducts?: boolean;
   isLoading?: boolean;
@@ -17,12 +18,14 @@ type ProductGridProps = {
   onSortChange?: (sortOrder: ProductSortOrder | "") => void;
   pagination?: ProductPagination | null;
   products: Product[];
+  shippingBadge?: string;
   showSort?: boolean;
   sortOrder?: ProductSortOrder | "";
   summaryLabel?: string;
 };
 
 export function ProductGrid({ 
+  desktopGridClassName,
   error = null, 
   hasMoreMobileProducts = false,
   isLoading = false, 
@@ -34,6 +37,7 @@ export function ProductGrid({
   onSortChange,
   pagination = null, 
   products,
+  shippingBadge = "envios a nivel nacional",
   showSort = true,
   sortOrder = "",
   summaryLabel = "productos encontrados",
@@ -96,8 +100,13 @@ export function ProductGrid({
         isLoadingMore={isLoading && Boolean(mobileProducts?.length)}
         onLoadMore={onLoadMoreMobile}
         products={mobileProducts ?? products}
+        shippingBadge={shippingBadge}
       />
-      <DesktopProductGrid products={products} />
+      <DesktopProductGrid
+        className={desktopGridClassName}
+        products={products}
+        shippingBadge={shippingBadge}
+      />
 
       {pagination && totalPages > 1 && (
         <div className="mt-4 hidden flex-wrap items-center justify-center gap-2 md:flex">

@@ -7,6 +7,7 @@ import { getCatalogProductImage } from "@/features/products/utils/productImage";
 
 type MobileProductCardProps = {
   product: Product;
+  shippingBadge?: string;
 };
 
 const badgeColors: Record<string, string> = {
@@ -33,7 +34,12 @@ const badgeColors: Record<string, string> = {
   Vidrios: "bg-blue-600",
 };
 
-export function MobileProductCard({ product }: MobileProductCardProps) {
+export function MobileProductCard({
+  product,
+  shippingBadge = "envios a nivel nacional",
+}: MobileProductCardProps) {
+  const conditionLabel = product.condition.replace(" importado", "");
+
   return (
     // Seccion movil: card compacta tipo marketplace para escanear rapido.
     <article className="relative w-full max-w-full overflow-hidden bg-white dark:bg-zinc-950">
@@ -48,7 +54,7 @@ export function MobileProductCard({ product }: MobileProductCardProps) {
           {product.image ? (
             <Image
               alt={product.name}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain"
               height={220}
               quality={45}
               sizes="50vw"
@@ -62,28 +68,28 @@ export function MobileProductCard({ product }: MobileProductCardProps) {
       </div>
 
       <div className="min-w-0 pt-1.5">
-        <h3 className="line-clamp-1 max-w-full break-words text-[13px] font-medium leading-5 text-zinc-950 dark:text-zinc-100">
-          <span
-            className={`mr-1 inline-flex rounded px-1.5 py-0.5 align-middle text-[10px] font-black leading-none text-white ${
-              product.categoryColor ? "" : badgeColors[product.category] ?? "bg-yellow-300"
-            }`}
-            style={
-              product.categoryColor
-                ? {
-                    backgroundColor: product.categoryColor,
-                    color: product.categoryTextColor ?? "#FFFFFF",
-                  }
-                : undefined
-            }
-          >
-            {product.category}
-          </span>
+        <span
+          className={`inline-flex max-w-full rounded px-1.5 py-0.5 text-[10px] font-black leading-none text-white ${
+            product.categoryColor ? "" : badgeColors[product.category] ?? "bg-yellow-300"
+          }`}
+          style={
+            product.categoryColor
+              ? {
+                  backgroundColor: product.categoryColor,
+                  color: product.categoryTextColor ?? "#FFFFFF",
+                }
+              : undefined
+          }
+        >
+          {product.category}
+        </span>
+        <h3 className="mt-0.5 line-clamp-2 min-h-10 max-w-full break-words text-[13px] font-medium leading-5 text-zinc-950 dark:text-zinc-100">
           {product.name}
         </h3>
 
         <p className="mt-1 flex min-w-0 items-center gap-1 truncate text-[12px] font-semibold leading-4 text-emerald-700 dark:text-emerald-400">
           <Truck size={12} suppressHydrationWarning />
-          Recojo gratis en taller
+          {shippingBadge}
         </p>
 
         <p className="mt-1 text-[22px] font-black leading-7 text-zinc-950 dark:text-zinc-100">
@@ -92,7 +98,7 @@ export function MobileProductCard({ product }: MobileProductCardProps) {
         </p>
 
         <p className="truncate text-[12px] leading-4 text-zinc-500 dark:text-zinc-400">
-          {product.availability} · {product.condition}
+          {product.availability} · {conditionLabel}
         </p>
       </div>
     </article>

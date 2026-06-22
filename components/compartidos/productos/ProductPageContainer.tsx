@@ -80,14 +80,14 @@ function StoreHero({ content }: { content: HomeContentModel["banner"] }) {
             <span className="text-zinc-950 dark:text-zinc-400">{content.tertiaryMessage}</span>
           </div>
         </div>
-        <div className="relative hidden h-36 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100 shadow-[0_14px_28px_rgba(15,23,42,0.10)] ring-1 ring-white/70 transition-colors duration-300 dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_34px_rgba(0,0,0,0.45)] dark:ring-red-500/10 md:block lg:h-40">
+        <div className="relative hidden h-36 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100 shadow-[0_14px_28px_rgba(15,23,42,0.10)] ring-1 ring-white/70 transition-colors duration-300 dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_34px_rgba(0,0,0,0.45)] dark:ring-red-500/10 lg:block lg:h-40">
           <Image
             alt="Banner de repuestos usados importados"
             className="object-cover object-center brightness-[0.98] contrast-[1.04] saturate-[1.04] dark:brightness-[0.88] dark:contrast-[1.08]"
             fill
             loading="eager"
             sizes="(min-width: 1280px) 380px, (min-width: 1024px) 360px, 0px"
-            src="/banner1.webp"
+            src="/banner-5.webp"
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-zinc-950/20 via-transparent to-zinc-950/10 dark:from-zinc-950/45 dark:via-zinc-950/5 dark:to-red-950/30" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white/10 via-transparent to-white/15 dark:from-zinc-950/35 dark:to-white/5" />
@@ -344,6 +344,7 @@ export function ProductPageContainer({
               pagination={productFilters.pagination}
               hasMoreMobileProducts={hasMoreMobileProducts}
               products={sortedCatalogProducts}
+              shippingBadge={homePageContent.header.shippingBadge}
               sortOrder={productFilters.filters.orden_precio ?? ""}
             />
           </div>

@@ -11,6 +11,7 @@ type MobileProductGridProps = {
   isLoadingMore?: boolean;
   onLoadMore?: () => void;
   products: Product[];
+  shippingBadge?: string;
 };
 
 export function MobileProductGrid({
@@ -18,6 +19,7 @@ export function MobileProductGrid({
   isLoadingMore = false,
   onLoadMore,
   products,
+  shippingBadge = "envios a nivel nacional",
 }: MobileProductGridProps) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -50,7 +52,7 @@ export function MobileProductGrid({
     <div className="md:hidden">
       <div className="grid w-full max-w-full grid-cols-2 gap-x-2 gap-y-5">
         {products.map((product) => (
-          <MobileProductCard key={product.id} product={product} />
+          <MobileProductCard key={product.id} product={product} shippingBadge={shippingBadge} />
         ))}
       </div>
 
